@@ -3,11 +3,9 @@ package hse.coursework.socialnetworkthoughts.security.dto;
 import lombok.Data;
 
 @Data
-public class RegisterDTO {
+public class LoginUserCredentialsDto {
 
     private String username;
 
     private String password;
-
-    private String nickname;
 }

@@ -1,7 +1,7 @@
 package hse.coursework.socialnetworkthoughts.security.service;
 
-import hse.coursework.socialnetworkthoughts.security.dto.LoginDTO;
-import hse.coursework.socialnetworkthoughts.security.dto.RegisterDTO;
+import hse.coursework.socialnetworkthoughts.security.dto.LoginUserCredentialsDto;
+import hse.coursework.socialnetworkthoughts.security.dto.RegisterUserCredentialsDto;
 import hse.coursework.socialnetworkthoughts.security.exception.UserAlreadyExistsException;
 import hse.coursework.socialnetworkthoughts.security.mapper.UserMapper;
 import hse.coursework.socialnetworkthoughts.security.model.Role;
@@ -26,30 +26,30 @@ public class AuthenticationService {
 
     private final AuthenticationManager authenticationManager;
 
-    public ResponseEntity<User> signup(RegisterDTO registerDTO) {
-        if (userMapper.findByUsername(registerDTO.getUsername()).isPresent()) {
+    public ResponseEntity<?> signup(RegisterUserCredentialsDto registerUserCredentialsDto) {
+        if (userMapper.findByUsername(registerUserCredentialsDto.getUsername()).isPresent()) {
             throw new UserAlreadyExistsException();
         }
 
         User user = new User(
-                registerDTO.getUsername(),
-                passwordEncoder.encode(registerDTO.getPassword()),
+                registerUserCredentialsDto.getUsername(),
+                passwordEncoder.encode(registerUserCredentialsDto.getPassword()),
                 Role.USER.name()
         );
         userMapper.save(user);
 
-        return ResponseEntity.ok(user);
+        return ResponseEntity.ok().build();
     }
 
-    public User authenticate(LoginDTO loginDTO) {
+    public User authenticate(LoginUserCredentialsDto loginUserCredentialsDTO) {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
-                        loginDTO.getUsername(),
-                        loginDTO.getPassword()
+                        loginUserCredentialsDTO.getUsername(),
+                        loginUserCredentialsDTO.getPassword()
                 )
         );
 
-        return userMapper.findByUsername(loginDTO.getUsername())
+        return userMapper.findByUsername(loginUserCredentialsDTO.getUsername())
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
     }
 }
