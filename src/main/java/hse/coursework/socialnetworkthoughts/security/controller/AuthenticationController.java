@@ -1,8 +1,8 @@
 package hse.coursework.socialnetworkthoughts.security.controller;
 
-import hse.coursework.socialnetworkthoughts.security.dto.LoginDTO;
-import hse.coursework.socialnetworkthoughts.security.dto.LoginResponseDTO;
-import hse.coursework.socialnetworkthoughts.security.dto.RegisterDTO;
+import hse.coursework.socialnetworkthoughts.security.dto.LoginUserCredentialsDto;
+import hse.coursework.socialnetworkthoughts.security.dto.JwtTokenDto;
+import hse.coursework.socialnetworkthoughts.security.dto.RegisterUserCredentialsDto;
 import hse.coursework.socialnetworkthoughts.security.model.User;
 import hse.coursework.socialnetworkthoughts.security.service.AuthenticationService;
 import hse.coursework.socialnetworkthoughts.security.service.JwtService;
@@ -24,18 +24,18 @@ public class AuthenticationController {
 
 
     @PostMapping("/signup")
-    public ResponseEntity<User> register(@RequestBody RegisterDTO registerDTO) {
-        return authenticationService.signup(registerDTO);
+    public ResponseEntity<?> register(@RequestBody RegisterUserCredentialsDto registerUserCredentialsDto) {
+        return authenticationService.signup(registerUserCredentialsDto);
     }
 
     @PostMapping("/login")
-    public ResponseEntity<LoginResponseDTO> authenticate(@RequestBody LoginDTO loginDTO) {
-        User authenticatedUser = authenticationService.authenticate(loginDTO);
+    public ResponseEntity<JwtTokenDto> authenticate(@RequestBody LoginUserCredentialsDto loginUserCredentialsDTO) {
+        User authenticatedUser = authenticationService.authenticate(loginUserCredentialsDTO);
 
         String jwtToken = jwtService.generateToken(authenticatedUser);
 
-        LoginResponseDTO loginResponseDTO = new LoginResponseDTO(jwtToken, jwtService.getExpirationTime());
+        JwtTokenDto jwtTokenDto = new JwtTokenDto(jwtToken, jwtService.getExpirationTime());
 
-        return ResponseEntity.ok(loginResponseDTO);
+        return ResponseEntity.ok(jwtTokenDto);
     }
 }
