@@ -20,10 +20,10 @@ import java.util.function.Function;
 public class JwtService {
 
     @Value("${security.jwt.secret-key}")
-    private String secretKey;
+    private String token;
 
     @Value("${security.jwt.expiration-time}")
-    private long jwtExpiration;
+    private long expiresIn;
 
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
@@ -39,11 +39,11 @@ public class JwtService {
     }
 
     public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
-        return buildToken(extraClaims, userDetails, jwtExpiration);
+        return buildToken(extraClaims, userDetails, expiresIn);
     }
 
     public long getExpirationTime() {
-        return jwtExpiration;
+        return expiresIn;
     }
 
     private String buildToken(
@@ -84,7 +84,7 @@ public class JwtService {
     }
 
     private Key getSignInKey() {
-        byte[] keyBytes = Decoders.BASE64.decode(secretKey);
+        byte[] keyBytes = Decoders.BASE64.decode(token);
         return Keys.hmacShaKeyFor(keyBytes);
     }
 }
