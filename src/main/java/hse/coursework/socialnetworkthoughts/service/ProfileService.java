@@ -23,7 +23,10 @@ public class ProfileService {
     private final ProfileMapper profileMapper;
 
     public ResponseEntity<?> getProfile(User user) {
-        Profile profile = profileMapper.findByUserId(user.getId()).orElseThrow(ProfileNotFoundException::new);
+        Profile profile = profileMapper
+                .findByUserId(user.getId())
+                .orElseThrow(ProfileNotFoundException::new);
+
         List<PostResponse> postResponses = new ArrayList<>();
         for (Post post : profile.getPosts()) {
             postResponses.add(new PostResponse(post.getId(), post.getProfileId(), post.getTheme(), post.getContent(), post.getLikes(), post.getReposts(), post.getComments(), post.getViews(), post.getAuthorId(), post.getCreatedAt(), post.getEditedAt()));

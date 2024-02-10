@@ -12,8 +12,8 @@ public interface UserMapper {
     @Results(value = {
             @Result(property = "id", column = "id")
     })
-    @Select("INSERT INTO Users (username, password, role) " +
-            "VALUES ('${username}', '${password}', '${role}') RETURNING id;")
+    @Select("INSERT INTO Users (username, password) " +
+            "VALUES ('${username}', '${password}') RETURNING id;")
     Id save(User user);
 
     @Results(value = {

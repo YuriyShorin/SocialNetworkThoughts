@@ -17,16 +17,18 @@ public interface ProfileMapper {
 
     @Results(value = {
             @Result(property = "id", column = "id"),
+            @Result(property = "userId", column = "user_id"),
             @Result(property = "nickname", column = "nickname"),
             @Result(property = "status", column = "status"),
             @Result(property = "description", column = "description"),
             @Result(property = "subscribes", column = "subscribes"),
             @Result(property = "subscribers", column = "subscribers"),
-            @Result(property = "posts", column = "id", javaType = List.class, many = @Many(select = "findPostsByProfileId"))
+            @Result(property = "createdAt", column = "created_at"),
+            @Result(property = "posts", column = "id", javaType = List.class, many = @Many(select = "findPostsByProfileId")),
     })
-    @Select("SELECT * FROM Profiles " +
-            "WHERE user_id = '${userId}';")
-    Optional<Profile> findByUserId(UUID userId);
+    @Select("SELECT * FROM Profiles pr " +
+            "WHERE pr.user_id = '${userId}';")
+    Optional<Profile> findByUserId(@Param("userId") UUID userId);
 
     @Results(value = {
             @Result(property = "id", column = "id"),
@@ -42,9 +44,9 @@ public interface ProfileMapper {
             @Result(property = "createdAt", column = "created_at"),
             @Result(property = "editedAt", column = "edited_at"),
     })
-    @Select("SELECT * FROM Posts " +
-            "WHERE profile_id = '${id}';")
-    List<Post> findPostsByProfileId(UUID id);
+    @Select("SELECT * FROM Posts p " +
+            "WHERE p.profile_id = '${profileId}';")
+    List<Post> findPostsByProfileId(@Param("profileId") UUID profileId);
 
 
     @Results(value = {
