@@ -7,7 +7,5 @@ import lombok.Data;
 @AllArgsConstructor
 public class JwtTokenDto {
 
-    private String token;
-
-    private long expiresIn;
+    private String jwtToken;
 }

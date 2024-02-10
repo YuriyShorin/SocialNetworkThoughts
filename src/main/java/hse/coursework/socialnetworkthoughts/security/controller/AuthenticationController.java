@@ -8,10 +8,7 @@ import hse.coursework.socialnetworkthoughts.security.service.AuthenticationServi
 import hse.coursework.socialnetworkthoughts.security.service.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RequestMapping("/api/v1/auth")
 @RestController
@@ -22,7 +19,6 @@ public class AuthenticationController {
 
     private final AuthenticationService authenticationService;
 
-
     @PostMapping("/signup")
     public ResponseEntity<?> register(@RequestBody RegisterUserCredentialsDto registerUserCredentialsDto) {
         return authenticationService.signup(registerUserCredentialsDto);
@@ -31,11 +27,15 @@ public class AuthenticationController {
     @PostMapping("/login")
     public ResponseEntity<JwtTokenDto> authenticate(@RequestBody LoginUserCredentialsDto loginUserCredentialsDTO) {
         User authenticatedUser = authenticationService.authenticate(loginUserCredentialsDTO);
-
         String jwtToken = jwtService.generateToken(authenticatedUser);
 
-        JwtTokenDto jwtTokenDto = new JwtTokenDto(jwtToken, jwtService.getExpirationTime());
+        JwtTokenDto jwtTokenDto = new JwtTokenDto(jwtToken);
 
         return ResponseEntity.ok(jwtTokenDto);
+    }
+
+    @GetMapping("/isAuthenticated")
+    public ResponseEntity<?> isAuthenticated() {
+        return ResponseEntity.ok().build();
     }
 }
