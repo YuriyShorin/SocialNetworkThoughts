@@ -1,9 +1,10 @@
 package hse.coursework.socialnetworkthoughts.security.service;
 
+import hse.coursework.socialnetworkthoughts.mapper.ProfileMapper;
 import hse.coursework.socialnetworkthoughts.security.dto.LoginUserCredentialsDto;
 import hse.coursework.socialnetworkthoughts.security.dto.RegisterUserCredentialsDto;
-import hse.coursework.socialnetworkthoughts.security.exception.UserAlreadyExistsException;
 import hse.coursework.socialnetworkthoughts.security.mapper.UserMapper;
+import hse.coursework.socialnetworkthoughts.security.model.Id;
 import hse.coursework.socialnetworkthoughts.security.model.Role;
 import hse.coursework.socialnetworkthoughts.security.model.User;
 
@@ -22,13 +23,15 @@ public class AuthenticationService {
 
     private final UserMapper userMapper;
 
+    private final ProfileMapper profileMapper;
+
     private final PasswordEncoder passwordEncoder;
 
     private final AuthenticationManager authenticationManager;
 
     public ResponseEntity<?> signup(RegisterUserCredentialsDto registerUserCredentialsDto) {
         if (userMapper.findByUsername(registerUserCredentialsDto.getUsername()).isPresent()) {
-            throw new UserAlreadyExistsException();
+            return ResponseEntity.status(409).build();
         }
 
         User user = new User(
@@ -36,7 +39,9 @@ public class AuthenticationService {
                 passwordEncoder.encode(registerUserCredentialsDto.getPassword()),
                 Role.USER.name()
         );
-        userMapper.save(user);
+
+        Id userId = userMapper.save(user);
+        profileMapper.save(userId.getId(), registerUserCredentialsDto.getNickname());
 
         return ResponseEntity.ok().build();
     }

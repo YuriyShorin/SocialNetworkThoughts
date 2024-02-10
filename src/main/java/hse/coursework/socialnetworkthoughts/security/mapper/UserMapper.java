@@ -1,5 +1,6 @@
 package hse.coursework.socialnetworkthoughts.security.mapper;
 
+import hse.coursework.socialnetworkthoughts.security.model.Id;
 import hse.coursework.socialnetworkthoughts.security.model.User;
 import org.apache.ibatis.annotations.*;
 
@@ -8,9 +9,12 @@ import java.util.Optional;
 @Mapper
 public interface UserMapper {
 
-    @Insert("INSERT INTO Users (username, password, role) " +
-            "VALUES ('${username}', '${password}', '${role}')")
-    void save(User user);
+    @Results(value = {
+            @Result(property = "id", column = "id")
+    })
+    @Select("INSERT INTO Users (username, password, role) " +
+            "VALUES ('${username}', '${password}', '${role}') RETURNING id;")
+    Id save(User user);
 
     @Results(value = {
             @Result(property = "id", column = "id"),
@@ -19,6 +23,6 @@ public interface UserMapper {
             @Result(property = "role", column = "role")
     })
     @Select("SELECT * FROM Users " +
-            "WHERE username = '${username}'")
+            "WHERE username = '${username}';")
     Optional<User> findByUsername(String username);
 }

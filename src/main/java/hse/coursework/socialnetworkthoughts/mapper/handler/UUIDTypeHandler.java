@@ -1,4 +1,4 @@
-package hse.coursework.socialnetworkthoughts.security.mapper.handler;
+package hse.coursework.socialnetworkthoughts.mapper.handler;
 
 import org.apache.ibatis.type.BaseTypeHandler;
 import org.apache.ibatis.type.JdbcType;
