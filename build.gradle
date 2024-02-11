@@ -25,10 +25,12 @@ dependencies {
     implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:3.0.3'
     implementation 'org.postgresql:postgresql:42.7.1'
     implementation 'org.liquibase:liquibase-core:4.25.1'
+    implementation 'org.mapstruct:mapstruct:1.5.5.Final'
     implementation 'javax.xml.bind:jaxb-api:2.4.0-b180830.0359'
 
     compileOnly 'org.projectlombok:lombok:1.18.30'
     annotationProcessor 'org.projectlombok:lombok:1.18.30'
+    annotationProcessor "org.mapstruct:mapstruct-processor:1.5.5.Final"
 
     implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
     runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
