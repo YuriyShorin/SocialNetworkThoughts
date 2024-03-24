@@ -1,5 +1,4 @@
-package hse.coursework.socialnetworkthoughts.security.model;
-
+package hse.coursework.socialnetworkthoughts.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

@@ -1,19 +1,19 @@
-package hse.coursework.socialnetworkthoughts.security.mapper;
+package hse.coursework.socialnetworkthoughts.security.repository;
 
-import hse.coursework.socialnetworkthoughts.security.model.Id;
+import hse.coursework.socialnetworkthoughts.model.Id;
 import hse.coursework.socialnetworkthoughts.security.model.User;
 import org.apache.ibatis.annotations.*;
 
 import java.util.Optional;
 
 @Mapper
-public interface UserMapper {
+public interface UserRepository {
 
     @Results(value = {
             @Result(property = "id", column = "id")
     })
-    @Select("INSERT INTO Users (username, password) " +
-            "VALUES ('${username}', '${password}') RETURNING id;")
+    @Select("INSERT INTO Users (username, password, role) " +
+            "VALUES ('${username}', '${password}', '${role}') RETURNING id;")
     Id save(User user);
 
     @Results(value = {

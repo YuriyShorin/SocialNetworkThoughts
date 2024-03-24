@@ -1,6 +1,6 @@
 package hse.coursework.socialnetworkthoughts.security.service;
 
-import hse.coursework.socialnetworkthoughts.security.mapper.UserMapper;
+import hse.coursework.socialnetworkthoughts.security.repository.UserRepository;
 
 import lombok.AllArgsConstructor;
 
@@ -13,10 +13,10 @@ import org.springframework.stereotype.Service;
 @AllArgsConstructor
 public class UserService implements UserDetailsService {
 
-    private UserMapper userMapper;
+    private UserRepository userRepository;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return userMapper.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        return userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("User not found"));
     }
 }

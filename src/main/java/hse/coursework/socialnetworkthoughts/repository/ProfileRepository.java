@@ -1,6 +1,5 @@
-package hse.coursework.socialnetworkthoughts.mapper;
+package hse.coursework.socialnetworkthoughts.repository;
 
-import hse.coursework.socialnetworkthoughts.model.Post;
 import hse.coursework.socialnetworkthoughts.model.Profile;
 import org.apache.ibatis.annotations.*;
 
@@ -9,7 +8,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Mapper
-public interface ProfileMapper {
+public interface ProfileRepository {
 
     @Insert("INSERT INTO Profiles (user_id, nickname) " +
             "VALUES ('${userId}', '${nickname}');")
@@ -24,30 +23,12 @@ public interface ProfileMapper {
             @Result(property = "subscribes", column = "subscribes"),
             @Result(property = "subscribers", column = "subscribers"),
             @Result(property = "createdAt", column = "created_at"),
-            @Result(property = "posts", column = "id", javaType = List.class, many = @Many(select = "findPostsByProfileId")),
+            @Result(property = "posts", column = "id", javaType = List.class,
+                    many = @Many(select = "hse.coursework.socialnetworkthoughts.repository.PostRepository.findAllByProfileId")),
     })
-    @Select("SELECT * FROM Profiles pr " +
-            "WHERE pr.user_id = '${userId}';")
+    @Select("SELECT * FROM Profiles " +
+            "WHERE user_id = '${userId}';")
     Optional<Profile> findByUserId(@Param("userId") UUID userId);
-
-    @Results(value = {
-            @Result(property = "id", column = "id"),
-            @Result(property = "profileId", column = "profile_id"),
-            @Result(property = "theme", column = "theme"),
-            @Result(property = "content", column = "content"),
-            @Result(property = "likes", column = "likes"),
-            @Result(property = "reposts", column = "reposts"),
-            @Result(property = "comments", column = "comments"),
-            @Result(property = "views", column = "views"),
-            @Result(property = "isRepost", column = "is_repost"),
-            @Result(property = "authorId", column = "author_id"),
-            @Result(property = "createdAt", column = "created_at"),
-            @Result(property = "editedAt", column = "edited_at"),
-    })
-    @Select("SELECT * FROM Posts p " +
-            "WHERE p.profile_id = '${profileId}';")
-    List<Post> findPostsByProfileId(@Param("profileId") UUID profileId);
-
 
     @Results(value = {
             @Result(property = "id", column = "id"),
@@ -61,4 +42,24 @@ public interface ProfileMapper {
     @Select("SELECT * FROM Profiles " +
             "WHERE id = '${id}';")
     Optional<Profile> findById(UUID id);
+
+    @Results(value = {
+            @Result(property = "id", column = "id"),
+            @Result(property = "nickname", column = "nickname"),
+            @Result(property = "status", column = "status"),
+            @Result(property = "description", column = "description"),
+            @Result(property = "subscribes", column = "subscribes"),
+            @Result(property = "subscribers", column = "subscribers")
+
+    })
+    @Select("SELECT * FROM Profiles " +
+            "WHERE nickname ILIKE CONCAT('${nickname}', '%') " +
+            "ORDER BY nickname;")
+    List<Profile> findByNickname(String nickname);
+
+    @Update("UPDATE Profiles " +
+            "SET nickname =  '${nickname}', status = '${status}', description = '${description}', " +
+            "subscribes = '${subscribes}', subscribers = '${subscribers}' " +
+            "WHERE id = '${id}';")
+    void update(Profile profile);
 }

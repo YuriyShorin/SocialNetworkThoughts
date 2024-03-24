@@ -1,15 +1,16 @@
 package hse.coursework.socialnetworkthoughts.security.service;
 
-import hse.coursework.socialnetworkthoughts.mapper.ProfileMapper;
+import hse.coursework.socialnetworkthoughts.repository.ProfileRepository;
 import hse.coursework.socialnetworkthoughts.security.dto.LoginUserCredentialsDto;
 import hse.coursework.socialnetworkthoughts.security.dto.RegisterUserCredentialsDto;
-import hse.coursework.socialnetworkthoughts.security.mapper.UserMapper;
-import hse.coursework.socialnetworkthoughts.security.model.Id;
+import hse.coursework.socialnetworkthoughts.security.repository.UserRepository;
+import hse.coursework.socialnetworkthoughts.model.Id;
 import hse.coursework.socialnetworkthoughts.security.model.Role;
 import hse.coursework.socialnetworkthoughts.security.model.User;
 
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -21,17 +22,17 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class AuthenticationService {
 
-    private final UserMapper userMapper;
+    private final UserRepository userRepository;
 
-    private final ProfileMapper profileMapper;
+    private final ProfileRepository profileRepository;
 
     private final PasswordEncoder passwordEncoder;
 
     private final AuthenticationManager authenticationManager;
 
     public ResponseEntity<?> signup(RegisterUserCredentialsDto registerUserCredentialsDto) {
-        if (userMapper.findByUsername(registerUserCredentialsDto.getUsername()).isPresent()) {
-            return ResponseEntity.status(409).build();
+        if (userRepository.findByUsername(registerUserCredentialsDto.getUsername()).isPresent()) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).build();
         }
 
         User user = new User(
@@ -40,10 +41,10 @@ public class AuthenticationService {
                 Role.USER.name()
         );
 
-        Id userId = userMapper.save(user);
-        profileMapper.save(userId.getId(), registerUserCredentialsDto.getNickname());
+        Id userId = userRepository.save(user);
+        profileRepository.save(userId.getId(), registerUserCredentialsDto.getNickname());
 
-        return ResponseEntity.ok().build();
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     public User authenticate(LoginUserCredentialsDto loginUserCredentialsDTO) {
@@ -54,7 +55,7 @@ public class AuthenticationService {
                 )
         );
 
-        return userMapper.findByUsername(loginUserCredentialsDTO.getUsername())
+        return userRepository.findByUsername(loginUserCredentialsDTO.getUsername())
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
     }
 }

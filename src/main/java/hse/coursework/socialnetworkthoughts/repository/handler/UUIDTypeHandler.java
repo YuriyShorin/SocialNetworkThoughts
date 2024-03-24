@@ -1,4 +1,4 @@
-package hse.coursework.socialnetworkthoughts.mapper.handler;
+package hse.coursework.socialnetworkthoughts.repository.handler;
 
 import org.apache.ibatis.type.BaseTypeHandler;
 import org.apache.ibatis.type.JdbcType;
@@ -10,6 +10,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.UUID;
 
+@SuppressWarnings("unused")
 @MappedTypes(UUID.class)
 public class UUIDTypeHandler extends BaseTypeHandler<UUID> {
 

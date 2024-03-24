@@ -3,10 +3,10 @@ package hse.coursework.socialnetworkthoughts.exception;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-@ResponseStatus(code = HttpStatus.NO_CONTENT, reason = "Profile not found")
-public class ProfileNotFoundException extends RuntimeException {
+@ResponseStatus(value = HttpStatus.CONFLICT, reason = "Post is not yours")
+public class NotPostOwnerException extends RuntimeException {
 
-    public ProfileNotFoundException() {
+    public NotPostOwnerException() {
         super();
     }
 }

@@ -23,9 +23,9 @@ public class Profile {
 
     private String description;
 
-    private Integer subscribes;
+    private Long subscribes;
 
-    private Integer subscribers;
+    private Long subscribers;
 
     private List<Post> posts;
 
