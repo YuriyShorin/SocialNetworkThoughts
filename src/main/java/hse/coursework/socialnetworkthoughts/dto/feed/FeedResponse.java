@@ -1,15 +1,15 @@
 package hse.coursework.socialnetworkthoughts.dto.feed;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.experimental.Accessors;
 
 import java.sql.Timestamp;
 import java.util.UUID;
 
 @Schema(description = "Feed response dto")
 @Data
-@AllArgsConstructor
+@Accessors(chain = true)
 public class FeedResponse {
 
     @Schema(description = "postId", example = "e75e1be9-aadd-4144-9941-7b180cdbcff4")

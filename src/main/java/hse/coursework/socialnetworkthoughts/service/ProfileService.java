@@ -1,20 +1,16 @@
 package hse.coursework.socialnetworkthoughts.service;
 
-import hse.coursework.socialnetworkthoughts.dto.post.PostResponse;
 import hse.coursework.socialnetworkthoughts.dto.profile.ProfileResponse;
 import hse.coursework.socialnetworkthoughts.exception.ProfileNotFoundException;
-import hse.coursework.socialnetworkthoughts.model.Post;
-import hse.coursework.socialnetworkthoughts.repository.PostRepository;
-import hse.coursework.socialnetworkthoughts.repository.ProfileRepository;
+import hse.coursework.socialnetworkthoughts.mapper.ProfileMapper;
 import hse.coursework.socialnetworkthoughts.model.Profile;
+import hse.coursework.socialnetworkthoughts.repository.ProfileRepository;
 import hse.coursework.socialnetworkthoughts.repository.SubscriptionRepository;
 import hse.coursework.socialnetworkthoughts.security.model.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -25,40 +21,14 @@ public class ProfileService {
 
     private final SubscriptionRepository subscriptionRepository;
 
-    private final PostRepository postRepository;
+    private final ProfileMapper profileMapper;
 
     public ResponseEntity<ProfileResponse> getAuthenticatedUserProfile(User user) {
         Profile profile = profileRepository
                 .findByUserId(user.getId())
                 .orElseThrow(ProfileNotFoundException::new);
 
-        ProfileResponse profileResponse = new ProfileResponse();
-        profileResponse.setId(profile.getId());
-        profileResponse.setNickname(profile.getNickname());
-        profileResponse.setStatus(profile.getStatus());
-        profileResponse.setDescription(profile.getDescription());
-
-        List<PostResponse> postResponses = new ArrayList<>();
-        for (Post post : profile.getPosts()) {
-            Boolean isLiked = postRepository.findLike(profile.getId(), post.getId()).isPresent();
-
-            PostResponse postResponse = new PostResponse(
-                    post.getId(),
-                    post.getTheme(),
-                    post.getContent(),
-                    post.getLikes(),
-                    isLiked,
-                    post.getReposts(),
-                    post.getComments(),
-                    post.getViews(),
-                    post.getAuthorId(),
-                    post.getCreatedAt(),
-                    post.getEditedAt()
-            );
-
-            postResponses.add(postResponse);
-        }
-        profileResponse.setPosts(postResponses);
+        ProfileResponse profileResponse = profileMapper.toProfileResponse(profile);
 
         return ResponseEntity.ok(profileResponse);
     }

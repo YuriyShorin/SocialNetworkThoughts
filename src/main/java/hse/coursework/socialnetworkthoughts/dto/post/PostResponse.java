@@ -1,15 +1,15 @@
 package hse.coursework.socialnetworkthoughts.dto.post;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.experimental.Accessors;
 
 import java.sql.Timestamp;
 import java.util.UUID;
 
 @Schema(description = "Post response dto")
 @Data
-@AllArgsConstructor
+@Accessors(chain = true)
 public class PostResponse {
 
     @Schema(description = "Post Id", example = "e75e1be9-aadd-4144-9941-7b180cdbcff4")

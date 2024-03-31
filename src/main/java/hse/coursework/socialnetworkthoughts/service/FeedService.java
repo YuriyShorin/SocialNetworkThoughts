@@ -2,6 +2,7 @@ package hse.coursework.socialnetworkthoughts.service;
 
 import hse.coursework.socialnetworkthoughts.dto.feed.FeedResponse;
 import hse.coursework.socialnetworkthoughts.exception.ProfileNotFoundException;
+import hse.coursework.socialnetworkthoughts.mapper.FeedMapper;
 import hse.coursework.socialnetworkthoughts.model.Feed;
 import hse.coursework.socialnetworkthoughts.model.Profile;
 import hse.coursework.socialnetworkthoughts.repository.FeedRepository;
@@ -12,45 +13,36 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class FeedService {
 
-    private final ProfileRepository profileRepository;
-
     private final FeedRepository feedRepository;
+
+    private final FeedMapper feedMapper;
+
+    private final ProfileRepository profileRepository;
 
     private final PostRepository postRepository;
 
     public ResponseEntity<?> getFeed(User user) {
-        Profile profile = profileRepository.findByUserId(user.getId()).orElseThrow(ProfileNotFoundException::new);
+        Profile profile = profileRepository.findByUserId(user.getId())
+                .orElseThrow(ProfileNotFoundException::new);
+
         List<Feed> feeds = feedRepository.getFeedByProfileId(profile.getId());
-        List<FeedResponse> feedResponses = new ArrayList<>();
 
-        for (Feed feed : feeds) {
-            Boolean isLiked = postRepository.findLike(profile.getId(), feed.getPostId()).isPresent();
-
-            FeedResponse feedResponse = new FeedResponse(
-                    feed.getPostId(),
-                    feed.getProfileId(),
-                    feed.getProfileNickname(),
-                    feed.getTheme(),
-                    feed.getContent(),
-                    feed.getLikes(),
-                    isLiked,
-                    feed.getReposts(),
-                    feed.getComments(),
-                    feed.getViews(),
-                    feed.getAuthorId(),
-                    feed.getCreatedAt(),
-                    feed.getEditedAt());
-
-            feedResponses.add(feedResponse);
-        }
+        List<FeedResponse> feedResponses = feeds.stream()
+                .map(feed -> getFeedResponse(feed, profile))
+                .collect(Collectors.toList());
 
         return ResponseEntity.ok(feedResponses);
+    }
+
+    private FeedResponse getFeedResponse(Feed feed, Profile profile) {
+        Boolean isLiked = postRepository.findLike(profile.getId(), feed.getPostId()).isPresent();
+        return feedMapper.toFeedResponse(feed, isLiked);
     }
 }

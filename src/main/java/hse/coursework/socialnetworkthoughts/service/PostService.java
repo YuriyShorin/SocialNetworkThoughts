@@ -1,14 +1,14 @@
 package hse.coursework.socialnetworkthoughts.service;
 
-import hse.coursework.socialnetworkthoughts.dto.post.CreatePostRequest;
 import hse.coursework.socialnetworkthoughts.dto.IdResponse;
+import hse.coursework.socialnetworkthoughts.dto.post.CreatePostRequest;
 import hse.coursework.socialnetworkthoughts.dto.post.UpdatePostRequest;
 import hse.coursework.socialnetworkthoughts.exception.*;
-import hse.coursework.socialnetworkthoughts.repository.PostRepository;
-import hse.coursework.socialnetworkthoughts.repository.ProfileRepository;
+import hse.coursework.socialnetworkthoughts.model.Id;
 import hse.coursework.socialnetworkthoughts.model.Post;
 import hse.coursework.socialnetworkthoughts.model.Profile;
-import hse.coursework.socialnetworkthoughts.model.Id;
+import hse.coursework.socialnetworkthoughts.repository.PostRepository;
+import hse.coursework.socialnetworkthoughts.repository.ProfileRepository;
 import hse.coursework.socialnetworkthoughts.security.model.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
