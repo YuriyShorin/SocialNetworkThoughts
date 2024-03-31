@@ -4,6 +4,7 @@ import hse.coursework.socialnetworkthoughts.dto.post.PostResponse;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.Accessors;
 
 import java.util.List;
 import java.util.UUID;
@@ -11,6 +12,7 @@ import java.util.UUID;
 @Schema(description = "Profile response dto")
 @Data
 @NoArgsConstructor
+@Accessors(chain = true)
 public class ProfileResponse {
 
     @Schema(description = "id", example = "e75e1be9-aadd-4144-9941-7b180cdbcff4")

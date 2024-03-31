@@ -2,14 +2,14 @@ package hse.coursework.socialnetworkthoughts.dto.post;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.experimental.Accessors;
 
 import java.util.UUID;
 
 @Schema(description = "Update post request dto")
 @Data
-@AllArgsConstructor
+@Accessors(chain = true)
 public class UpdatePostRequest {
 
     @Schema(description = "id", example = "e75e1be9-aadd-4144-9941-7b180cdbcff4")

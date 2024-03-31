@@ -29,6 +29,8 @@ dependencies {
     implementation 'org.postgresql:postgresql:42.7.3'
     implementation 'org.liquibase:liquibase-core:4.25.1'
     implementation 'javax.xml.bind:jaxb-api:2.4.0-b180830.0359'
+    implementation 'org.mapstruct:mapstruct:1.5.5.Final'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
 
     compileOnly 'org.projectlombok:lombok:1.18.30'
     annotationProcessor 'org.projectlombok:lombok:1.18.30'
