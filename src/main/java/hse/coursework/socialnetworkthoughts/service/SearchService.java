@@ -8,7 +8,7 @@ import hse.coursework.socialnetworkthoughts.mapper.ProfileMapper;
 import hse.coursework.socialnetworkthoughts.model.Feed;
 import hse.coursework.socialnetworkthoughts.model.Profile;
 import hse.coursework.socialnetworkthoughts.repository.FeedRepository;
-import hse.coursework.socialnetworkthoughts.repository.PostRepository;
+import hse.coursework.socialnetworkthoughts.repository.LikeRepository;
 import hse.coursework.socialnetworkthoughts.repository.ProfileRepository;
 import hse.coursework.socialnetworkthoughts.security.model.User;
 import lombok.RequiredArgsConstructor;
@@ -24,9 +24,9 @@ public class SearchService {
 
     private final ProfileRepository profileRepository;
 
-    private final PostRepository postRepository;
-
     private final FeedRepository feedRepository;
+
+    private final LikeRepository likeRepository;
 
     private final ProfileMapper profileMapper;
 
@@ -57,7 +57,7 @@ public class SearchService {
     }
 
     private FeedResponse getFeedResponse(Feed feed, Profile currentProfile) {
-        Boolean isLiked = postRepository.findLike(currentProfile.getId(), feed.getPostId()).isPresent();
+        Boolean isLiked = likeRepository.findByProfileId(currentProfile.getId(), feed.getPostId()).isPresent();
         return feedMapper.toFeedResponse(feed, isLiked);
     }
 }

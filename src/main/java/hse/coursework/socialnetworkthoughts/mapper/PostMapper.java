@@ -2,7 +2,7 @@ package hse.coursework.socialnetworkthoughts.mapper;
 
 import hse.coursework.socialnetworkthoughts.dto.post.PostResponse;
 import hse.coursework.socialnetworkthoughts.model.Post;
-import hse.coursework.socialnetworkthoughts.repository.PostRepository;
+import hse.coursework.socialnetworkthoughts.repository.LikeRepository;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 public abstract class PostMapper {
 
     @Autowired
-    private PostRepository postRepository;
+    private LikeRepository likeRepository;
 
     @Mapping(target = "isLiked", expression = "java(getLikeStatus(post, profileId))")
     public abstract PostResponse toPostResponse(Post post, UUID profileId);
@@ -27,7 +27,7 @@ public abstract class PostMapper {
     }
 
     protected Boolean getLikeStatus(Post post, UUID profileId) {
-        return postRepository.findLike(profileId, post.getId())
+        return likeRepository.findByProfileId(profileId, post.getId())
                 .isPresent();
     }
 }

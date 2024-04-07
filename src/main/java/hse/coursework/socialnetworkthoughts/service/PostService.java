@@ -8,6 +8,8 @@ import hse.coursework.socialnetworkthoughts.exception.*;
 import hse.coursework.socialnetworkthoughts.model.Id;
 import hse.coursework.socialnetworkthoughts.model.Post;
 import hse.coursework.socialnetworkthoughts.model.Profile;
+import hse.coursework.socialnetworkthoughts.repository.FileRepository;
+import hse.coursework.socialnetworkthoughts.repository.LikeRepository;
 import hse.coursework.socialnetworkthoughts.repository.PostRepository;
 import hse.coursework.socialnetworkthoughts.repository.ProfileRepository;
 import hse.coursework.socialnetworkthoughts.security.model.User;
@@ -28,6 +30,10 @@ public class PostService {
 
     private final PostRepository postRepository;
 
+    private final LikeRepository likeRepository;
+
+    private final FileRepository fileRepository;
+
     private final FileService fileService;
 
     public ResponseEntity<IdResponse> createPost(CreatePostRequest createPostRequest, User user) {
@@ -36,6 +42,7 @@ public class PostService {
 
         return ResponseEntity.status(HttpStatus.CREATED).body(new IdResponse(id.getId()));
     }
+
     public ResponseEntity<IdResponse> createPostWithFiles(CreatePostWithFilesRequest createPostWithFilesRequest, User user) {
         Profile profile = profileRepository.findByUserId(user.getId()).orElseThrow(ProfileNotFoundException::new);
         Id id = postRepository.save(new Post(profile.getId(), createPostWithFilesRequest.getTheme(), createPostWithFilesRequest.getContent(), profile.getId()));
@@ -43,7 +50,7 @@ public class PostService {
         MultipartFile[] files = createPostWithFilesRequest.getFiles();
         Arrays.stream(files).forEach(file -> {
             String url = fileService.save(file);
-            postRepository.savePicture(id.getId(), url);
+            fileRepository.savePicture(id.getId(), url);
         });
 
         return ResponseEntity.status(HttpStatus.CREATED).body(new IdResponse(id.getId()));
@@ -72,11 +79,11 @@ public class PostService {
         Profile profile = profileRepository.findByUserId(user.getId()).orElseThrow(ProfileNotFoundException::new);
         Post post = postRepository.findById(postId).orElseThrow(PostNotFoundException::new);
 
-        if (postRepository.findLike(profile.getId(), postId).isPresent()) {
+        if (likeRepository.findByProfileId(profile.getId(), postId).isPresent()) {
             throw new PostAlreadyLikedException();
         }
 
-        postRepository.like(profile.getId(), postId);
+        likeRepository.save(profile.getId(), postId);
         post.setLikes(post.getLikes() + 1);
         postRepository.update(post);
 
@@ -88,11 +95,11 @@ public class PostService {
         Profile profile = profileRepository.findByUserId(user.getId()).orElseThrow(ProfileNotFoundException::new);
         Post post = postRepository.findById(postId).orElseThrow(PostNotFoundException::new);
 
-        if (postRepository.findLike(profile.getId(), postId).isEmpty()) {
+        if (likeRepository.findByProfileId(profile.getId(), postId).isEmpty()) {
             throw new PostNotLikedException();
         }
 
-        postRepository.unlike(profile.getId(), postId);
+        likeRepository.delete(profile.getId(), postId);
         post.setLikes(post.getLikes() - 1);
         postRepository.update(post);
 

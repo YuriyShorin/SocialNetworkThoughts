@@ -6,7 +6,7 @@ import hse.coursework.socialnetworkthoughts.mapper.FeedMapper;
 import hse.coursework.socialnetworkthoughts.model.Feed;
 import hse.coursework.socialnetworkthoughts.model.Profile;
 import hse.coursework.socialnetworkthoughts.repository.FeedRepository;
-import hse.coursework.socialnetworkthoughts.repository.PostRepository;
+import hse.coursework.socialnetworkthoughts.repository.LikeRepository;
 import hse.coursework.socialnetworkthoughts.repository.ProfileRepository;
 import hse.coursework.socialnetworkthoughts.security.model.User;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +26,7 @@ public class FeedService {
 
     private final ProfileRepository profileRepository;
 
-    private final PostRepository postRepository;
+    private final LikeRepository likeRepository;
 
     public ResponseEntity<?> getFeed(User user) {
         Profile profile = profileRepository.findByUserId(user.getId())
@@ -41,7 +41,7 @@ public class FeedService {
     }
 
     private FeedResponse getFeedResponse(Feed feed, Profile profile) {
-        Boolean isLiked = postRepository.findLike(profile.getId(), feed.getPostId()).isPresent();
+        Boolean isLiked = likeRepository.findByProfileId(profile.getId(), feed.getPostId()).isPresent();
         return feedMapper.toFeedResponse(feed, isLiked);
     }
 }

@@ -6,7 +6,7 @@ import hse.coursework.socialnetworkthoughts.exception.ProfileNotFoundException;
 import hse.coursework.socialnetworkthoughts.mapper.ProfileMapper;
 import hse.coursework.socialnetworkthoughts.model.Profile;
 import hse.coursework.socialnetworkthoughts.model.URL;
-import hse.coursework.socialnetworkthoughts.repository.PostRepository;
+import hse.coursework.socialnetworkthoughts.repository.FileRepository;
 import hse.coursework.socialnetworkthoughts.repository.ProfileRepository;
 import hse.coursework.socialnetworkthoughts.repository.SubscriptionRepository;
 import hse.coursework.socialnetworkthoughts.security.model.User;
@@ -26,7 +26,7 @@ public class ProfileService {
 
     private final SubscriptionRepository subscriptionRepository;
 
-    private final PostRepository postRepository;
+    private final FileRepository fileRepository;
 
     private final ProfileMapper profileMapper;
 
@@ -41,7 +41,7 @@ public class ProfileService {
 
         for (PostResponse post : profileResponse.getPosts()) {
             List<byte[]> files = new ArrayList<>();
-            List<URL> urls = postRepository.findUrlsByPostId(post.getId());
+            List<URL> urls = fileRepository.findUrlsByPostId(post.getId());
             for (URL url : urls) {
                 files.add(fileService.load(url.getUrl()));
             }

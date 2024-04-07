@@ -1,9 +1,7 @@
 package hse.coursework.socialnetworkthoughts.repository;
 
-import hse.coursework.socialnetworkthoughts.model.Like;
 import hse.coursework.socialnetworkthoughts.model.Post;
 import hse.coursework.socialnetworkthoughts.model.Id;
-import hse.coursework.socialnetworkthoughts.model.URL;
 import org.apache.ibatis.annotations.*;
 
 import java.util.List;
@@ -16,17 +14,6 @@ public interface PostRepository {
     @Select("INSERT INTO Posts (profile_id, theme, content, author_id) " +
             "VALUES ('${profileId}', '${theme}', '${content}', '${authorId}') RETURNING id;")
     Id save(Post post);
-
-    @Select("INSERT INTO Posts_pictures(post_id, url) " +
-            "VALUES ('${postId}', '${url}');")
-    void savePicture(UUID postId, String url);
-
-    @Results(value = {
-            @Result(property = "url", column = "url")
-    })
-    @Select("SELECT * FROM Posts_pictures " +
-            "WHERE post_id = '${postId}';")
-    List<URL> findUrlsByPostId(UUID postId);
 
     @Results(value = {
             @Result(property = "id", column = "id"),
@@ -92,22 +79,4 @@ public interface PostRepository {
             "WHERE profile_id = '${profileId}' " +
             "ORDER BY created_at DESC;")
     List<Post> findAllByProfileId(@Param("profileId") UUID profileId);
-
-    @Results(value = {
-            @Result(property = "profileId", column = "profile_id"),
-            @Result(property = "postId", column = "post_id")
-    })
-    @Select("SELECT profile_id, post_id FROM Likes " +
-            "WHERE profile_id = '${profileId}' " +
-            "AND post_id = '${postId}';")
-    Optional<Like> findLike(@Param("profileId") UUID profileId, @Param("postId") UUID postId);
-
-    @Insert("INSERT INTO Likes(profile_id, post_id) " +
-            "VALUES ('${profileId}', '${postId}');")
-    void like(@Param("profileId") UUID profileId, @Param("postId") UUID postId);
-
-    @Delete("DELETE FROM Likes " +
-            "WHERE profile_id = '${profileId}' " +
-            "AND post_id = '${postId}';")
-    void unlike(@Param("profileId") UUID profileId, @Param("postId") UUID postId);
 }
