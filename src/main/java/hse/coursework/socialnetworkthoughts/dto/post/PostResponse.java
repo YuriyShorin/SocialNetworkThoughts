@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 
 import java.sql.Timestamp;
+import java.util.List;
 import java.util.UUID;
 
 @Schema(description = "Post response dto")
@@ -45,4 +46,7 @@ public class PostResponse {
 
     @Schema(description = "Post was edited at", example = "2024-15-02 11:58:00")
     private Timestamp editedAt;
+
+    @Schema(description = "files")
+    private List<byte[]> files;
 }

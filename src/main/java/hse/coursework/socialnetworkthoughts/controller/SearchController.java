@@ -1,6 +1,6 @@
 package hse.coursework.socialnetworkthoughts.controller;
 
-import hse.coursework.socialnetworkthoughts.dto.post.SearchPostResponse;
+import hse.coursework.socialnetworkthoughts.dto.feed.FeedResponse;
 import hse.coursework.socialnetworkthoughts.dto.profile.SearchProfileResponse;
 import hse.coursework.socialnetworkthoughts.security.model.User;
 import hse.coursework.socialnetworkthoughts.service.SearchService;
@@ -30,7 +30,9 @@ public class SearchController {
             description = "Profiles found",
             content = {@Content(mediaType = "application/json", schema = @Schema(implementation = List.class))})
     @GetMapping("/profiles/{nickname}")
-    public ResponseEntity<List<SearchProfileResponse>> searchProfilesByNickname(@PathVariable String nickname, @AuthenticationPrincipal User user) {
+    public ResponseEntity<List<SearchProfileResponse>> searchProfilesByNickname(
+            @PathVariable String nickname,
+            @AuthenticationPrincipal User user) {
         return searchService.searchProfilesByNickname(nickname, user);
     }
 
@@ -40,7 +42,9 @@ public class SearchController {
             description = "Posts found",
             content = {@Content(mediaType = "application/json", schema = @Schema(implementation = List.class))})
     @GetMapping("/posts/{theme}")
-    public ResponseEntity<List<SearchPostResponse>> searchPostsByTheme(@PathVariable String theme) {
-        return searchService.searchPostsByTheme(theme);
+    public ResponseEntity<List<FeedResponse>> searchPostsByTheme(
+            @PathVariable String theme,
+            @AuthenticationPrincipal User user) {
+        return searchService.searchPostsByTheme(theme, user);
     }
 }

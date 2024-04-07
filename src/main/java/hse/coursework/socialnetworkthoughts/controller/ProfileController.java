@@ -33,6 +33,16 @@ public class ProfileController {
         return profileService.getAuthenticatedUserProfile(user);
     }
 
+    @Operation(summary = "Get profile by id")
+    @ApiResponse(
+            responseCode = "200",
+            description = "Profile found",
+            content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ProfileResponse.class))})
+    @GetMapping("/{profileId}")
+    public ResponseEntity<ProfileResponse> getProfileById(@PathVariable UUID profileId) {
+        return profileService.getProfileById(profileId);
+    }
+
     @Operation(summary = "Subscribe")
     @ApiResponse(
             responseCode = "200",

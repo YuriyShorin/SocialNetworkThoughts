@@ -3,6 +3,7 @@ package hse.coursework.socialnetworkthoughts.repository;
 import hse.coursework.socialnetworkthoughts.model.Like;
 import hse.coursework.socialnetworkthoughts.model.Post;
 import hse.coursework.socialnetworkthoughts.model.Id;
+import hse.coursework.socialnetworkthoughts.model.URL;
 import org.apache.ibatis.annotations.*;
 
 import java.util.List;
@@ -15,6 +16,17 @@ public interface PostRepository {
     @Select("INSERT INTO Posts (profile_id, theme, content, author_id) " +
             "VALUES ('${profileId}', '${theme}', '${content}', '${authorId}') RETURNING id;")
     Id save(Post post);
+
+    @Select("INSERT INTO Posts_pictures(post_id, url) " +
+            "VALUES ('${postId}', '${url}');")
+    void savePicture(UUID postId, String url);
+
+    @Results(value = {
+            @Result(property = "url", column = "url")
+    })
+    @Select("SELECT * FROM Posts_pictures " +
+            "WHERE post_id = '${postId}';")
+    List<URL> findUrlsByPostId(UUID postId);
 
     @Results(value = {
             @Result(property = "id", column = "id"),
@@ -53,7 +65,7 @@ public interface PostRepository {
     Optional<Post> findByIdAndProfileId(UUID id, UUID profileId);
 
     @Update("UPDATE Posts " +
-            "SET theme = '${theme}', content = '${content}' " +
+            "SET theme = '${theme}', content = '${content}', likes = '${likes}' " +
             "WHERE id = '${id}';")
     void update(Post post);
 

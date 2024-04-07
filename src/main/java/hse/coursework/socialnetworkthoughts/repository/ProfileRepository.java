@@ -32,16 +32,19 @@ public interface ProfileRepository {
 
     @Results(value = {
             @Result(property = "id", column = "id"),
+            @Result(property = "userId", column = "user_id"),
             @Result(property = "nickname", column = "nickname"),
             @Result(property = "status", column = "status"),
             @Result(property = "description", column = "description"),
             @Result(property = "subscribes", column = "subscribes"),
-            @Result(property = "subscribers", column = "subscribers")
-
+            @Result(property = "subscribers", column = "subscribers"),
+            @Result(property = "createdAt", column = "created_at"),
+            @Result(property = "posts", column = "id", javaType = List.class,
+                    many = @Many(select = "hse.coursework.socialnetworkthoughts.repository.PostRepository.findAllByProfileId")),
     })
     @Select("SELECT * FROM Profiles " +
-            "WHERE id = '${id}';")
-    Optional<Profile> findById(UUID id);
+            "WHERE id = '${profileId}';")
+    Optional<Profile> findById(UUID profileId);
 
     @Results(value = {
             @Result(property = "id", column = "id"),

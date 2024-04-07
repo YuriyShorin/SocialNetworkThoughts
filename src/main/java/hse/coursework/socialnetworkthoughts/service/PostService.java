@@ -2,6 +2,7 @@ package hse.coursework.socialnetworkthoughts.service;
 
 import hse.coursework.socialnetworkthoughts.dto.IdResponse;
 import hse.coursework.socialnetworkthoughts.dto.post.CreatePostRequest;
+import hse.coursework.socialnetworkthoughts.dto.post.CreatePostWithFilesRequest;
 import hse.coursework.socialnetworkthoughts.dto.post.UpdatePostRequest;
 import hse.coursework.socialnetworkthoughts.exception.*;
 import hse.coursework.socialnetworkthoughts.model.Id;
@@ -14,7 +15,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Arrays;
 import java.util.UUID;
 
 @Service
@@ -25,9 +28,23 @@ public class PostService {
 
     private final PostRepository postRepository;
 
-    public ResponseEntity<IdResponse> createPost(User user, CreatePostRequest createPostRequest) {
+    private final FileService fileService;
+
+    public ResponseEntity<IdResponse> createPost(CreatePostRequest createPostRequest, User user) {
         Profile profile = profileRepository.findByUserId(user.getId()).orElseThrow(ProfileNotFoundException::new);
         Id id = postRepository.save(new Post(profile.getId(), createPostRequest.getTheme(), createPostRequest.getContent(), profile.getId()));
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(new IdResponse(id.getId()));
+    }
+    public ResponseEntity<IdResponse> createPostWithFiles(CreatePostWithFilesRequest createPostWithFilesRequest, User user) {
+        Profile profile = profileRepository.findByUserId(user.getId()).orElseThrow(ProfileNotFoundException::new);
+        Id id = postRepository.save(new Post(profile.getId(), createPostWithFilesRequest.getTheme(), createPostWithFilesRequest.getContent(), profile.getId()));
+
+        MultipartFile[] files = createPostWithFilesRequest.getFiles();
+        Arrays.stream(files).forEach(file -> {
+            String url = fileService.save(file);
+            postRepository.savePicture(id.getId(), url);
+        });
 
         return ResponseEntity.status(HttpStatus.CREATED).body(new IdResponse(id.getId()));
     }

@@ -33,7 +33,6 @@ public class FeedService {
                 .orElseThrow(ProfileNotFoundException::new);
 
         List<Feed> feeds = feedRepository.getFeedByProfileId(profile.getId());
-
         List<FeedResponse> feedResponses = feeds.stream()
                 .map(feed -> getFeedResponse(feed, profile))
                 .collect(Collectors.toList());

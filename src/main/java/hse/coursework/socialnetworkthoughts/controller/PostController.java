@@ -2,6 +2,7 @@ package hse.coursework.socialnetworkthoughts.controller;
 
 import hse.coursework.socialnetworkthoughts.dto.post.CreatePostRequest;
 import hse.coursework.socialnetworkthoughts.dto.IdResponse;
+import hse.coursework.socialnetworkthoughts.dto.post.CreatePostWithFilesRequest;
 import hse.coursework.socialnetworkthoughts.dto.post.UpdatePostRequest;
 import hse.coursework.socialnetworkthoughts.security.model.User;
 import hse.coursework.socialnetworkthoughts.service.PostService;
@@ -34,8 +35,22 @@ public class PostController {
             description = "Post created",
             content = {@Content(mediaType = "application/json", schema = @Schema(implementation = IdResponse.class))})
     @PostMapping
-    public ResponseEntity<IdResponse> createPost(@RequestBody @Valid CreatePostRequest createPostRequest, @AuthenticationPrincipal User user) {
-        return postService.createPost(user, createPostRequest);
+    public ResponseEntity<IdResponse> createPost(
+            @RequestBody @Valid CreatePostRequest createPostRequest,
+            @AuthenticationPrincipal User user) {
+        return postService.createPost(createPostRequest, user);
+    }
+
+    @Operation(summary = "Create post with files")
+    @ApiResponse(
+            responseCode = "201",
+            description = "Post created",
+            content = {@Content(mediaType = "application/json", schema = @Schema(implementation = IdResponse.class))})
+    @PostMapping("/withFiles")
+    public ResponseEntity<IdResponse> createPostWithFiles(
+            @ModelAttribute @Valid CreatePostWithFilesRequest createPostWithFilesRequest,
+            @AuthenticationPrincipal User user) {
+        return postService.createPostWithFiles(createPostWithFilesRequest, user);
     }
 
     @Operation(summary = "Update post")
@@ -43,7 +58,9 @@ public class PostController {
             responseCode = "200",
             description = "Post updated")
     @PutMapping
-    public ResponseEntity<?> updatePost(@RequestBody @Valid UpdatePostRequest updatePostRequest, @AuthenticationPrincipal User user) {
+    public ResponseEntity<?> updatePost(
+            @RequestBody @Valid UpdatePostRequest updatePostRequest,
+            @AuthenticationPrincipal User user) {
         return postService.updatePost(updatePostRequest, user);
     }
 
@@ -58,7 +75,8 @@ public class PostController {
                     description = "Post Id",
                     required = true,
                     schema = @Schema(example = "86ae734e-87d6-44f1-8e7d-991e308b3121"))
-            @PathVariable UUID id, @AuthenticationPrincipal User user) {
+            @PathVariable UUID id,
+            @AuthenticationPrincipal User user) {
         return postService.deletePostById(id, user);
     }
 
