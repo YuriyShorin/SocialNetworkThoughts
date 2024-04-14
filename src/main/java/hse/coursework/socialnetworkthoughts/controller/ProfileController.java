@@ -1,6 +1,7 @@
 package hse.coursework.socialnetworkthoughts.controller;
 
 import hse.coursework.socialnetworkthoughts.dto.profile.ProfileResponse;
+import hse.coursework.socialnetworkthoughts.dto.profile.SubscriptionResponseDto;
 import hse.coursework.socialnetworkthoughts.security.model.User;
 import hse.coursework.socialnetworkthoughts.service.ProfileService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -13,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @Tag(name = "Profile controller", description = "Profile API")
@@ -61,5 +63,18 @@ public class ProfileController {
     @PostMapping("/unsubscribe/{profileId}")
     public ResponseEntity<?> unsubscribe(@PathVariable UUID profileId, @AuthenticationPrincipal User user) {
         return profileService.unsubscribe(profileId, user);
+    }
+
+    @Operation(description = "Получение подписок авторизированного пользователя ")
+    @GetMapping("/subscriptions")
+    public List<SubscriptionResponseDto> getProfileSubscriptions(@AuthenticationPrincipal User user) {
+        return profileService.getProfileSubscriptions(user);
+    }
+
+    @Operation(description = "Получение подписок авторизированного пользователя ")
+    @GetMapping("/{id}/subscriptions")
+    public List<SubscriptionResponseDto> getProfileSubscriptionsByProfileId(@PathVariable(value = "id") UUID profileId,
+                                                                            @AuthenticationPrincipal User user) {
+        return profileService.getProfileSubscriptionsByProfileId(profileId, user);
     }
 }

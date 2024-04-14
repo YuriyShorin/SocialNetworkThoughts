@@ -3,6 +3,7 @@ package hse.coursework.socialnetworkthoughts.repository;
 import hse.coursework.socialnetworkthoughts.model.Subscription;
 import org.apache.ibatis.annotations.*;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -20,6 +21,10 @@ public interface SubscriptionRepository {
     Optional<Subscription> findByProfileIdAndSubscriptionProfileId(
             @Param("profileId") UUID profileId,
             @Param("subscriptionProfileId") UUID subscriptionProfileId);
+
+    @Select("SELECT s.subscription_profile_id FROM Subscriptions s " +
+            "WHERE s.profile_id = '${profileId}';")
+    List<UUID> findSubscriptionsByProfileId(@Param("profileId") UUID profileId);
 
     @Insert("INSERT INTO Subscriptions (profile_id, subscription_profile_id) " +
             "VALUES ('${profileId}', '${subscriptionProfileId}');")

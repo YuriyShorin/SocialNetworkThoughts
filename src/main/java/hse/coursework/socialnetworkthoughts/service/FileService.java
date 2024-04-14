@@ -1,5 +1,8 @@
 package hse.coursework.socialnetworkthoughts.service;
 
+import hse.coursework.socialnetworkthoughts.model.URL;
+import hse.coursework.socialnetworkthoughts.repository.FileRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -12,10 +15,15 @@ import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
 @Service
+@RequiredArgsConstructor
 public class FileService {
+
+    private final FileRepository fileRepository;
 
     @Value("${file.storage}")
     private String storage;
@@ -29,6 +37,10 @@ public class FileService {
         }
 
         return path.toString();
+    }
+
+    public List<URL> findUrlsByPostId(UUID postId) {
+        return fileRepository.findUrlsByPostId(postId);
     }
 
     public byte[] load(String fileName) {
