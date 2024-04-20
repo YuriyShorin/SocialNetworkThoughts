@@ -17,6 +17,10 @@ public class SubscriptionsService {
         return subscriptionRepository.findSubscriptionsByProfileId(profileId);
     }
 
+    public List<UUID> findSubscribersByProfileId(UUID profileId) {
+        return subscriptionRepository.findSubscribersByProfileId(profileId);
+    }
+
     public void save(UUID id, UUID profileId) {
         subscriptionRepository.save(id, profileId);
     }

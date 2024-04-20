@@ -71,10 +71,23 @@ public class ProfileController {
         return profileService.getProfileSubscriptions(user);
     }
 
-    @Operation(description = "Получение подписок авторизированного пользователя ")
+    @Operation(description = "Получение подписок определенного пользователя ")
     @GetMapping("/{id}/subscriptions")
     public List<SubscriptionResponseDto> getProfileSubscriptionsByProfileId(@PathVariable(value = "id") UUID profileId,
                                                                             @AuthenticationPrincipal User user) {
         return profileService.getProfileSubscriptionsByProfileId(profileId, user);
+    }
+
+    @Operation(description = "Получение подписчиков авторизированного пользователя ")
+    @GetMapping("/subscribers")
+    public List<SubscriptionResponseDto> getProfileSubscribers(@AuthenticationPrincipal User user) {
+        return profileService.getProfileSubscribers(user);
+    }
+
+    @Operation(description = "Получение подписчиков определенного пользователя ")
+    @GetMapping("/{id}/subscribers")
+    public List<SubscriptionResponseDto> getProfileSubscribersByProfileId(@PathVariable(value = "id") UUID profileId,
+                                                                          @AuthenticationPrincipal User user) {
+        return profileService.getProfileSubscribersByProfileId(profileId, user);
     }
 }

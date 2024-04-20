@@ -26,6 +26,10 @@ public interface SubscriptionRepository {
             "WHERE s.profile_id = '${profileId}';")
     List<UUID> findSubscriptionsByProfileId(@Param("profileId") UUID profileId);
 
+    @Select("SELECT s.profile_id FROM Subscriptions s " +
+            "WHERE s.subscription_profile_id = '${profileId}';")
+    List<UUID> findSubscribersByProfileId(@Param("profileId") UUID profileId);
+
     @Insert("INSERT INTO Subscriptions (profile_id, subscription_profile_id) " +
             "VALUES ('${profileId}', '${subscriptionProfileId}');")
     void save(@Param("profileId") UUID profileId, @Param("subscriptionProfileId") UUID subscriptionProfileId);

@@ -67,7 +67,7 @@ public class ProfileService {
             return new ResponseEntity<>("Нельзя подписаться на самого себя", HttpStatusCode.valueOf(209));
         }
 
-        List<UUID> subscriptions = subscriptionsService.findSubscriptionsByProfileId(currentProfile.getId());
+        List<UUID> subscriptions = getSubscriptionsByProfileId(currentProfile);
         if (subscriptions.contains(profile.getId())) {
             return new ResponseEntity<>("Вы уже подписаны на данного пользователя", HttpStatusCode.valueOf(209));
         }
@@ -103,7 +103,7 @@ public class ProfileService {
         Profile currentProfile = profileRepository.findByUserId(user.getId())
                 .orElseThrow(ProfileNotFoundException::new);
 
-        List<UUID> profilesSubscriptions = subscriptionsService.findSubscriptionsByProfileId(currentProfile.getId());
+        List<UUID> profilesSubscriptions = getSubscriptionsByProfileId(currentProfile);
 
         return getSubscriptionResponseDtos(profilesSubscriptions);
     }
@@ -112,22 +112,40 @@ public class ProfileService {
         Profile currentProfile = profileRepository.findByUserId(user.getId())
                 .orElseThrow(ProfileNotFoundException::new);
 
-        Profile profile = profileRepository.findById(profileId).orElseThrow(ProfileNotFoundException::new);
-
-        List<UUID> profileSubscriptions = subscriptionsService.findSubscriptionsByProfileId(profile.getId());
-        List<UUID> currentProfileSubscriptions = subscriptionsService.findSubscriptionsByProfileId(currentProfile.getId());
+        List<UUID> profileSubscriptions = subscriptionsService.findSubscriptionsByProfileId(profileId);
+        List<UUID> currentProfileSubscriptions = getSubscriptionsByProfileId(currentProfile);
 
         return getSubscriptionResponseDtos(profileSubscriptions, currentProfileSubscriptions);
     }
 
-    private List<SubscriptionResponseDto> getSubscriptionResponseDtos(List<UUID> profileSubscriptions, List<UUID> currentProfileSubscriptions) {
-        return profileSubscriptions.stream()
-                .map(profileSubscription -> {
-                    String nickname = getProfileNickname(profileSubscription);
+    public List<SubscriptionResponseDto> getProfileSubscribers(User user) {
+        Profile currentProfile = profileRepository.findByUserId(user.getId())
+                .orElseThrow(ProfileNotFoundException::new);
+
+        List<UUID> profilesSubscribers = getSubscribersByProfileId(currentProfile.getId());
+        List<UUID> currentProfileSubscriptions = getSubscriptionsByProfileId(currentProfile);
+
+        return getSubscriptionResponseDtos(profilesSubscribers, currentProfileSubscriptions);
+    }
+
+    public List<SubscriptionResponseDto> getProfileSubscribersByProfileId(UUID profileId, User user) {
+        Profile currentProfile = profileRepository.findByUserId(user.getId())
+                .orElseThrow(ProfileNotFoundException::new);
+
+        List<UUID> profilesSubscribers = getSubscribersByProfileId(profileId);
+        List<UUID> currentProfileSubscriptions = getSubscriptionsByProfileId(currentProfile);
+
+        return getSubscriptionResponseDtos(profilesSubscribers, currentProfileSubscriptions);
+    }
+
+    private List<SubscriptionResponseDto> getSubscriptionResponseDtos(List<UUID> profileSubs, List<UUID> currentProfileSubscriptions) {
+        return profileSubs.stream()
+                .map(profileSub -> {
+                    String nickname = getProfileNickname(profileSub);
 
                     return new SubscriptionResponseDto()
-                            .setProfileId(profileSubscription)
-                            .setIsSubscribed(currentProfileSubscriptions.contains(profileSubscription))
+                            .setProfileId(profileSub)
+                            .setIsSubscribed(currentProfileSubscriptions.contains(profileSub))
                             .setNickname(nickname);
                 })
                 .collect(Collectors.toList());
@@ -146,9 +164,17 @@ public class ProfileService {
                 .collect(Collectors.toList());
     }
 
-    private String getProfileNickname(UUID profileSubscription) {
-        return profileRepository.findById(profileSubscription)
+    private String getProfileNickname(UUID profileId) {
+        return profileRepository.findById(profileId)
                 .map(Profile::getNickname)
                 .orElse(null);
+    }
+
+    private List<UUID> getSubscribersByProfileId(UUID profileId) {
+        return subscriptionsService.findSubscribersByProfileId(profileId);
+    }
+
+    private List<UUID> getSubscriptionsByProfileId(Profile currentProfile) {
+        return subscriptionsService.findSubscriptionsByProfileId(currentProfile.getId());
     }
 }
