@@ -1,6 +1,5 @@
 package hse.coursework.socialnetworkthoughts.controller;
 
-import hse.coursework.socialnetworkthoughts.dto.post.CreatePostRequest;
 import hse.coursework.socialnetworkthoughts.dto.IdResponse;
 import hse.coursework.socialnetworkthoughts.dto.post.CreatePostWithFilesRequest;
 import hse.coursework.socialnetworkthoughts.dto.post.UpdatePostRequest;
@@ -36,21 +35,9 @@ public class PostController {
             content = {@Content(mediaType = "application/json", schema = @Schema(implementation = IdResponse.class))})
     @PostMapping
     public ResponseEntity<IdResponse> createPost(
-            @RequestBody @Valid CreatePostRequest createPostRequest,
-            @AuthenticationPrincipal User user) {
-        return postService.createPost(createPostRequest, user);
-    }
-
-    @Operation(summary = "Create post with files")
-    @ApiResponse(
-            responseCode = "201",
-            description = "Post created",
-            content = {@Content(mediaType = "application/json", schema = @Schema(implementation = IdResponse.class))})
-    @PostMapping("/withFiles")
-    public ResponseEntity<IdResponse> createPostWithFiles(
             @ModelAttribute @Valid CreatePostWithFilesRequest createPostWithFilesRequest,
             @AuthenticationPrincipal User user) {
-        return postService.createPostWithFiles(createPostWithFilesRequest, user);
+        return postService.createPost(createPostWithFilesRequest, user);
     }
 
     @Operation(summary = "Update post")

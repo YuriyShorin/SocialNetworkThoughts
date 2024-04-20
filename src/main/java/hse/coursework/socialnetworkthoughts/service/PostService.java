@@ -1,7 +1,6 @@
 package hse.coursework.socialnetworkthoughts.service;
 
 import hse.coursework.socialnetworkthoughts.dto.IdResponse;
-import hse.coursework.socialnetworkthoughts.dto.post.CreatePostRequest;
 import hse.coursework.socialnetworkthoughts.dto.post.CreatePostWithFilesRequest;
 import hse.coursework.socialnetworkthoughts.dto.post.UpdatePostRequest;
 import hse.coursework.socialnetworkthoughts.exception.*;
@@ -17,9 +16,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.UUID;
 
 @Service
@@ -36,29 +37,37 @@ public class PostService {
 
     private final FileService fileService;
 
-    public ResponseEntity<IdResponse> createPost(CreatePostRequest createPostRequest, User user) {
-        Profile profile = profileRepository.findByUserId(user.getId()).orElseThrow(ProfileNotFoundException::new);
-        Id id = postRepository.save(new Post(profile.getId(), createPostRequest.getTheme(), createPostRequest.getContent(), profile.getId()));
+    @Transactional
+    public ResponseEntity<IdResponse> createPost(CreatePostWithFilesRequest createPostWithFilesRequest, User user) {
+        Profile profile = profileRepository.findByUserId(user.getId())
+                .orElseThrow(ProfileNotFoundException::new);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(new IdResponse(id.getId()));
-    }
-
-    public ResponseEntity<IdResponse> createPostWithFiles(CreatePostWithFilesRequest createPostWithFilesRequest, User user) {
-        Profile profile = profileRepository.findByUserId(user.getId()).orElseThrow(ProfileNotFoundException::new);
-        Id id = postRepository.save(new Post(profile.getId(), createPostWithFilesRequest.getTheme(), createPostWithFilesRequest.getContent(), profile.getId()));
+        Id id = postRepository.save(new Post()
+                .setProfileId(profile.getId())
+                .setTheme(createPostWithFilesRequest.getTheme())
+                .setContent(createPostWithFilesRequest.getContent())
+                .setAuthorId(profile.getId()));
 
         MultipartFile[] files = createPostWithFilesRequest.getFiles();
-        Arrays.stream(files).forEach(file -> {
-            String url = fileService.save(file);
-            fileRepository.savePicture(id.getId(), url);
-        });
+
+        if (files != null) {
+            Arrays.stream(files)
+                    .filter(Objects::nonNull)
+                    .forEach(file -> {
+                        String url = fileService.save(file);
+                        fileRepository.savePicture(id.getId(), url);
+                    });
+        }
 
         return ResponseEntity.status(HttpStatus.CREATED).body(new IdResponse(id.getId()));
     }
 
     public ResponseEntity<?> updatePost(UpdatePostRequest updatePostRequest, User user) {
-        Profile profile = profileRepository.findByUserId(user.getId()).orElseThrow(ProfileNotFoundException::new);
-        Post post = postRepository.findByIdAndProfileId(updatePostRequest.getId(), profile.getId()).orElseThrow(NotPostOwnerException::new);
+        Profile profile = profileRepository.findByUserId(user.getId())
+                .orElseThrow(ProfileNotFoundException::new);
+
+        Post post = postRepository.findByIdAndProfileId(updatePostRequest.getId(), profile.getId())
+                .orElseThrow(NotPostOwnerException::new);
 
         post.setTheme(updatePostRequest.getTheme());
         post.setContent(updatePostRequest.getContent());
@@ -68,16 +77,22 @@ public class PostService {
     }
 
     public ResponseEntity<?> deletePostById(UUID id, User user) {
-        Profile profile = profileRepository.findByUserId(user.getId()).orElseThrow(ProfileNotFoundException::new);
-        postRepository.findByIdAndProfileId(id, profile.getId()).orElseThrow(NotPostOwnerException::new);
+        Profile profile = profileRepository.findByUserId(user.getId())
+                .orElseThrow(ProfileNotFoundException::new);
+
+        postRepository.findByIdAndProfileId(id, profile.getId())
+                .orElseThrow(NotPostOwnerException::new);
 
         postRepository.delete(id);
         return ResponseEntity.ok().build();
     }
 
     public ResponseEntity<?> likePost(UUID postId, User user) {
-        Profile profile = profileRepository.findByUserId(user.getId()).orElseThrow(ProfileNotFoundException::new);
-        Post post = postRepository.findById(postId).orElseThrow(PostNotFoundException::new);
+        Profile profile = profileRepository.findByUserId(user.getId())
+                .orElseThrow(ProfileNotFoundException::new);
+
+        Post post = postRepository.findById(postId)
+                .orElseThrow(PostNotFoundException::new);
 
         if (likeRepository.findByProfileId(profile.getId(), postId).isPresent()) {
             throw new PostAlreadyLikedException();
@@ -92,8 +107,11 @@ public class PostService {
 
 
     public ResponseEntity<?> unlikePost(UUID postId, User user) {
-        Profile profile = profileRepository.findByUserId(user.getId()).orElseThrow(ProfileNotFoundException::new);
-        Post post = postRepository.findById(postId).orElseThrow(PostNotFoundException::new);
+        Profile profile = profileRepository.findByUserId(user.getId())
+                .orElseThrow(ProfileNotFoundException::new);
+
+        Post post = postRepository.findById(postId)
+                .orElseThrow(PostNotFoundException::new);
 
         if (likeRepository.findByProfileId(profile.getId(), postId).isEmpty()) {
             throw new PostNotLikedException();

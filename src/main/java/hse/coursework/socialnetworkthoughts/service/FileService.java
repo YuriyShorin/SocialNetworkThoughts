@@ -16,12 +16,13 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.List;
-import java.util.Objects;
 import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
 public class FileService {
+
+    private final static String DOT = ".";
 
     private final FileRepository fileRepository;
 
@@ -29,7 +30,13 @@ public class FileService {
     private String storage;
 
     public String save(MultipartFile file) {
-        Path path = Path.of(storage).resolve(StringUtils.cleanPath(Objects.requireNonNull(file.getOriginalFilename())));
+        String fileExtension = StringUtils.getFilenameExtension(file.getOriginalFilename());
+
+        if (fileExtension == null) {
+            throw new RuntimeException("Не удалось определить формат файла");
+        }
+
+        Path path = Path.of(storage).resolve(StringUtils.cleanPath(generateFileName(fileExtension)));
         try {
             Files.copy(file.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException e) {
@@ -37,6 +44,12 @@ public class FileService {
         }
 
         return path.toString();
+    }
+
+    private static String generateFileName(String fileExtension) {
+        return UUID.randomUUID().toString()
+                .concat(DOT)
+                .concat(fileExtension);
     }
 
     public List<URL> findUrlsByPostId(UUID postId) {

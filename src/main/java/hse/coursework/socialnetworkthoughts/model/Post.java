@@ -1,15 +1,15 @@
 package hse.coursework.socialnetworkthoughts.model;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.Accessors;
 
 import java.sql.Timestamp;
 import java.util.UUID;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
+@Accessors(chain = true)
 public class Post {
 
     private UUID id;
@@ -35,11 +35,4 @@ public class Post {
     private Timestamp createdAt;
 
     private Timestamp editedAt;
-
-    public Post(UUID profileId, String theme, String content, UUID authorId) {
-        this.profileId = profileId;
-        this.theme = theme;
-        this.content = content;
-        this.authorId = authorId;
-    }
 }

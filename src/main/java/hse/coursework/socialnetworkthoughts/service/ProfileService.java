@@ -36,24 +36,17 @@ public class ProfileService {
                 .findByUserId(user.getId())
                 .orElseThrow(ProfileNotFoundException::new);
 
-        ProfileResponse profileResponse = profileMapper.toProfileResponse(profile);
-
-        for (PostResponse post : profileResponse.getPosts()) {
-            List<byte[]> files = new ArrayList<>();
-            List<URL> urls = fileService.findUrlsByPostId(post.getId());
-            for (URL url : urls) {
-                files.add(fileService.load(url.getUrl()));
-            }
-
-            post.setFiles(files);
-        }
+        ProfileResponse profileResponse = buildProfileResponse(profile);
 
         return ResponseEntity.ok(profileResponse);
     }
 
     public ResponseEntity<ProfileResponse> getProfileById(UUID profileId) {
-        Profile profile = profileRepository.findById(profileId).orElseThrow(ProfileNotFoundException::new);
-        ProfileResponse profileResponse = profileMapper.toProfileResponse(profile);
+        Profile profile = profileRepository
+                .findById(profileId)
+                .orElseThrow(ProfileNotFoundException::new);
+
+        ProfileResponse profileResponse = buildProfileResponse(profile);
 
         return ResponseEntity.ok(profileResponse);
     }
@@ -105,7 +98,7 @@ public class ProfileService {
 
         List<UUID> profilesSubscriptions = getSubscriptionsByProfileId(currentProfile);
 
-        return getSubscriptionResponseDtos(profilesSubscriptions);
+        return buildSubscriptionResponseDtos(profilesSubscriptions);
     }
 
     public List<SubscriptionResponseDto> getProfileSubscriptionsByProfileId(UUID profileId, User user) {
@@ -115,7 +108,7 @@ public class ProfileService {
         List<UUID> profileSubscriptions = subscriptionsService.findSubscriptionsByProfileId(profileId);
         List<UUID> currentProfileSubscriptions = getSubscriptionsByProfileId(currentProfile);
 
-        return getSubscriptionResponseDtos(profileSubscriptions, currentProfileSubscriptions);
+        return buildSubscriptionResponseDtos(profileSubscriptions, currentProfileSubscriptions);
     }
 
     public List<SubscriptionResponseDto> getProfileSubscribers(User user) {
@@ -125,7 +118,7 @@ public class ProfileService {
         List<UUID> profilesSubscribers = getSubscribersByProfileId(currentProfile.getId());
         List<UUID> currentProfileSubscriptions = getSubscriptionsByProfileId(currentProfile);
 
-        return getSubscriptionResponseDtos(profilesSubscribers, currentProfileSubscriptions);
+        return buildSubscriptionResponseDtos(profilesSubscribers, currentProfileSubscriptions);
     }
 
     public List<SubscriptionResponseDto> getProfileSubscribersByProfileId(UUID profileId, User user) {
@@ -135,10 +128,25 @@ public class ProfileService {
         List<UUID> profilesSubscribers = getSubscribersByProfileId(profileId);
         List<UUID> currentProfileSubscriptions = getSubscriptionsByProfileId(currentProfile);
 
-        return getSubscriptionResponseDtos(profilesSubscribers, currentProfileSubscriptions);
+        return buildSubscriptionResponseDtos(profilesSubscribers, currentProfileSubscriptions);
     }
 
-    private List<SubscriptionResponseDto> getSubscriptionResponseDtos(List<UUID> profileSubs, List<UUID> currentProfileSubscriptions) {
+    private ProfileResponse buildProfileResponse(Profile profile) {
+        ProfileResponse profileResponse = profileMapper.toProfileResponse(profile);
+
+        for (PostResponse post : profileResponse.getPosts()) {
+            List<byte[]> files = new ArrayList<>();
+            List<URL> urls = fileService.findUrlsByPostId(post.getId());
+            for (URL url : urls) {
+                files.add(fileService.load(url.getUrl()));
+            }
+
+            post.setFiles(files);
+        }
+        return profileResponse;
+    }
+
+    private List<SubscriptionResponseDto> buildSubscriptionResponseDtos(List<UUID> profileSubs, List<UUID> currentProfileSubscriptions) {
         return profileSubs.stream()
                 .map(profileSub -> {
                     String nickname = getProfileNickname(profileSub);
@@ -151,7 +159,7 @@ public class ProfileService {
                 .collect(Collectors.toList());
     }
 
-    private List<SubscriptionResponseDto> getSubscriptionResponseDtos(List<UUID> currentProfileSubscriptions) {
+    private List<SubscriptionResponseDto> buildSubscriptionResponseDtos(List<UUID> currentProfileSubscriptions) {
         return currentProfileSubscriptions.stream()
                 .map(profileSubscription -> {
                     String nickname = getProfileNickname(profileSubscription);
