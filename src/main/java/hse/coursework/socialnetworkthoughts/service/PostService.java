@@ -1,16 +1,17 @@
 package hse.coursework.socialnetworkthoughts.service;
 
 import hse.coursework.socialnetworkthoughts.dto.IdResponseDto;
+import hse.coursework.socialnetworkthoughts.dto.comment.CommentPostRequestDto;
+import hse.coursework.socialnetworkthoughts.dto.comment.UpdateCommentRequestDto;
 import hse.coursework.socialnetworkthoughts.dto.post.CreatePostRequestDto;
 import hse.coursework.socialnetworkthoughts.dto.post.UpdatePostRequestDto;
 import hse.coursework.socialnetworkthoughts.exception.*;
+import hse.coursework.socialnetworkthoughts.mapper.CommentMapper;
+import hse.coursework.socialnetworkthoughts.model.Comment;
 import hse.coursework.socialnetworkthoughts.model.Id;
 import hse.coursework.socialnetworkthoughts.model.Post;
 import hse.coursework.socialnetworkthoughts.model.Profile;
-import hse.coursework.socialnetworkthoughts.repository.FileRepository;
-import hse.coursework.socialnetworkthoughts.repository.LikeRepository;
-import hse.coursework.socialnetworkthoughts.repository.PostRepository;
-import hse.coursework.socialnetworkthoughts.repository.ProfileRepository;
+import hse.coursework.socialnetworkthoughts.repository.*;
 import hse.coursework.socialnetworkthoughts.security.model.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -27,6 +28,8 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class PostService {
 
+    private final FileService fileService;
+
     private final ProfileRepository profileRepository;
 
     private final PostRepository postRepository;
@@ -35,7 +38,9 @@ public class PostService {
 
     private final FileRepository fileRepository;
 
-    private final FileService fileService;
+    private final CommentRepository commentRepository;
+
+    private final CommentMapper commentMapper;
 
     @Transactional
     public ResponseEntity<IdResponseDto> createPost(CreatePostRequestDto createPostRequestDto, User user) {
@@ -120,6 +125,36 @@ public class PostService {
         likeRepository.delete(profile.getId(), postId);
         post.setLikes(post.getLikes() - 1);
         postRepository.update(post);
+
+        return ResponseEntity.ok().build();
+    }
+
+    public ResponseEntity<?> commentPost(CommentPostRequestDto commentPostRequestDto, User user) {
+        profileRepository.findByUserId(user.getId()).orElseThrow(ProfileNotFoundException::new);
+        postRepository.findById(commentPostRequestDto.getPostId()).orElseThrow(PostAlreadyLikedException::new);
+
+        Comment comment = commentMapper.toComment(commentPostRequestDto);
+        Id id = commentRepository.save(comment);
+
+        return ResponseEntity.ok(new IdResponseDto(id.getId()));
+    }
+
+    public ResponseEntity<?> updateComment(UpdateCommentRequestDto updateCommentRequestDto, User user) {
+        Profile profile = profileRepository.findByUserId(user.getId()).orElseThrow(ProfileNotFoundException::new);
+
+        Comment comment = commentRepository.findByIdAndProfileId(updateCommentRequestDto.getCommentId(), profile.getId()).orElseThrow(NotPostOwnerExceptionException::new);
+        comment.setContent(updateCommentRequestDto.getContent());
+        commentRepository.update(comment);
+
+        return ResponseEntity.ok().build();
+    }
+
+
+    public ResponseEntity<?> deleteCommentById(UUID commentId, User user) {
+        Profile profile = profileRepository.findByUserId(user.getId()).orElseThrow(ProfileNotFoundException::new);
+
+        commentRepository.findByIdAndProfileId(commentId, profile.getId()).orElseThrow(NotPostOwnerExceptionException::new);
+        commentRepository.deleteById(commentId);
 
         return ResponseEntity.ok().build();
     }

@@ -1,6 +1,8 @@
 package hse.coursework.socialnetworkthoughts.controller;
 
 import hse.coursework.socialnetworkthoughts.dto.IdResponseDto;
+import hse.coursework.socialnetworkthoughts.dto.comment.CommentPostRequestDto;
+import hse.coursework.socialnetworkthoughts.dto.comment.UpdateCommentRequestDto;
 import hse.coursework.socialnetworkthoughts.dto.post.CreatePostRequestDto;
 import hse.coursework.socialnetworkthoughts.dto.post.UpdatePostRequestDto;
 import hse.coursework.socialnetworkthoughts.security.model.User;
@@ -79,5 +81,34 @@ public class PostController {
             @PathVariable UUID postId,
             @AuthenticationPrincipal User user) {
         return postService.unlikePost(postId, user);
+    }
+
+    @Operation(summary = "Прокомментировать пост")
+    @PostMapping("/comment")
+    public ResponseEntity<?> commentPost(
+            @RequestBody CommentPostRequestDto commentPostRequestDto,
+            @AuthenticationPrincipal User user
+    ) {
+        return postService.commentPost(commentPostRequestDto, user);
+    }
+
+    @Operation(summary = "Изменить комментарий")
+    @PutMapping("/comment")
+    public ResponseEntity<?> updateComment(
+            @RequestBody UpdateCommentRequestDto updateCommentRequestDto,
+            @AuthenticationPrincipal User user) {
+        return postService.updateComment(updateCommentRequestDto, user);
+    }
+
+    @Operation(summary = "Удалить комментарий")
+    @DeleteMapping("/comment/{commentId}")
+    public ResponseEntity<?> deleteCommentById(@Parameter(
+            in = ParameterIn.PATH,
+            description = "Id комментария",
+            required = true,
+            schema = @Schema(example = "86ae734e-87d6-44f1-8e7d-991e308b3121"))
+                                               @PathVariable UUID commentId,
+                                               @AuthenticationPrincipal User user) {
+        return postService.deleteCommentById(commentId, user);
     }
 }
