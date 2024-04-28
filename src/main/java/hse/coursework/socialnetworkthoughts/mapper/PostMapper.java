@@ -1,6 +1,6 @@
 package hse.coursework.socialnetworkthoughts.mapper;
 
-import hse.coursework.socialnetworkthoughts.dto.post.PostResponse;
+import hse.coursework.socialnetworkthoughts.dto.post.PostResponseDto;
 import hse.coursework.socialnetworkthoughts.model.Post;
 import hse.coursework.socialnetworkthoughts.repository.LikeRepository;
 import org.mapstruct.Mapper;
@@ -18,9 +18,9 @@ public abstract class PostMapper {
     private LikeRepository likeRepository;
 
     @Mapping(target = "isLiked", expression = "java(getLikeStatus(post, profileId))")
-    public abstract PostResponse toPostResponse(Post post, UUID profileId);
+    public abstract PostResponseDto toPostResponse(Post post, UUID profileId);
 
-    public List<PostResponse> postListToPostResponseList(List<Post> posts, UUID profileId) {
+    public List<PostResponseDto> postListToPostResponseList(List<Post> posts, UUID profileId) {
         return posts.stream()
                 .map(post -> toPostResponse(post, profileId))
                 .collect(Collectors.toList());

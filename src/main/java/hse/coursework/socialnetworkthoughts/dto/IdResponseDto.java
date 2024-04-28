@@ -6,11 +6,11 @@ import lombok.Data;
 
 import java.util.UUID;
 
-@Schema(description = "Id response dto")
+@Schema(description = "Dto для получения id")
 @Data
 @AllArgsConstructor
-public class IdResponse {
+public class IdResponseDto {
 
-    @Schema(description = "id", example = "e75e1be9-aadd-4144-9941-7b180cdbcff4")
+    @Schema(description = "Id", example = "e75e1be9-aadd-4144-9941-7b180cdbcff4")
     private UUID id;
 }

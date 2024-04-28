@@ -1,7 +1,7 @@
 package hse.coursework.socialnetworkthoughts.service;
 
 import hse.coursework.socialnetworkthoughts.dto.feed.FeedResponse;
-import hse.coursework.socialnetworkthoughts.dto.profile.SearchProfileResponse;
+import hse.coursework.socialnetworkthoughts.dto.profile.SearchProfileResponseDto;
 import hse.coursework.socialnetworkthoughts.exception.ProfileNotFoundException;
 import hse.coursework.socialnetworkthoughts.mapper.FeedMapper;
 import hse.coursework.socialnetworkthoughts.mapper.ProfileMapper;
@@ -32,16 +32,16 @@ public class SearchService {
 
     private final FeedMapper feedMapper;
 
-    public ResponseEntity<List<SearchProfileResponse>> searchProfilesByNickname(String nickname, User user) {
+    public ResponseEntity<List<SearchProfileResponseDto>> searchProfilesByNickname(String nickname, User user) {
         Profile currentProfile = profileRepository.findByUserId(user.getId())
                 .orElseThrow(ProfileNotFoundException::new);
 
         List<Profile> profiles = profileRepository.findByNickname(nickname);
-        List<SearchProfileResponse> searchProfileResponses = profiles.stream()
+        List<SearchProfileResponseDto> searchProfileResponsDtos = profiles.stream()
                 .map(profile -> profileMapper.toSearchProfileResponse(profile, currentProfile.getId()))
                 .collect(Collectors.toList());
 
-        return ResponseEntity.ok(searchProfileResponses);
+        return ResponseEntity.ok(searchProfileResponsDtos);
     }
 
     public ResponseEntity<List<FeedResponse>> searchPostsByTheme(String theme, User user) {

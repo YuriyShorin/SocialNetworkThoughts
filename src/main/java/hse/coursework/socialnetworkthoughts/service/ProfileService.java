@@ -1,7 +1,7 @@
 package hse.coursework.socialnetworkthoughts.service;
 
-import hse.coursework.socialnetworkthoughts.dto.post.PostResponse;
-import hse.coursework.socialnetworkthoughts.dto.profile.ProfileResponse;
+import hse.coursework.socialnetworkthoughts.dto.post.PostResponseDto;
+import hse.coursework.socialnetworkthoughts.dto.profile.ProfileResponseDto;
 import hse.coursework.socialnetworkthoughts.dto.profile.SubscriptionResponseDto;
 import hse.coursework.socialnetworkthoughts.exception.ProfileNotFoundException;
 import hse.coursework.socialnetworkthoughts.mapper.ProfileMapper;
@@ -31,24 +31,24 @@ public class ProfileService {
 
     private final FileService fileService;
 
-    public ResponseEntity<ProfileResponse> getAuthenticatedUserProfile(User user) {
+    public ResponseEntity<ProfileResponseDto> getAuthenticatedUserProfile(User user) {
         Profile profile = profileRepository
                 .findByUserId(user.getId())
                 .orElseThrow(ProfileNotFoundException::new);
 
-        ProfileResponse profileResponse = buildProfileResponse(profile);
+        ProfileResponseDto profileResponseDto = buildProfileResponse(profile);
 
-        return ResponseEntity.ok(profileResponse);
+        return ResponseEntity.ok(profileResponseDto);
     }
 
-    public ResponseEntity<ProfileResponse> getProfileById(UUID profileId) {
+    public ResponseEntity<ProfileResponseDto> getProfileById(UUID profileId) {
         Profile profile = profileRepository
                 .findById(profileId)
                 .orElseThrow(ProfileNotFoundException::new);
 
-        ProfileResponse profileResponse = buildProfileResponse(profile);
+        ProfileResponseDto profileResponseDto = buildProfileResponse(profile);
 
-        return ResponseEntity.ok(profileResponse);
+        return ResponseEntity.ok(profileResponseDto);
     }
 
     public ResponseEntity<?> subscribe(UUID profileId, User user) {
@@ -131,10 +131,10 @@ public class ProfileService {
         return buildSubscriptionResponseDtos(profilesSubscribers, currentProfileSubscriptions);
     }
 
-    private ProfileResponse buildProfileResponse(Profile profile) {
-        ProfileResponse profileResponse = profileMapper.toProfileResponse(profile);
+    private ProfileResponseDto buildProfileResponse(Profile profile) {
+        ProfileResponseDto profileResponseDto = profileMapper.toProfileResponse(profile);
 
-        for (PostResponse post : profileResponse.getPosts()) {
+        for (PostResponseDto post : profileResponseDto.getPosts()) {
             List<byte[]> files = new ArrayList<>();
             List<URL> urls = fileService.findUrlsByPostId(post.getId());
             for (URL url : urls) {
@@ -143,7 +143,7 @@ public class ProfileService {
 
             post.setFiles(files);
         }
-        return profileResponse;
+        return profileResponseDto;
     }
 
     private List<SubscriptionResponseDto> buildSubscriptionResponseDtos(List<UUID> profileSubs, List<UUID> currentProfileSubscriptions) {

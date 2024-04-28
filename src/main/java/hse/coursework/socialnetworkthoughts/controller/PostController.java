@@ -1,16 +1,14 @@
 package hse.coursework.socialnetworkthoughts.controller;
 
-import hse.coursework.socialnetworkthoughts.dto.IdResponse;
-import hse.coursework.socialnetworkthoughts.dto.post.CreatePostWithFilesRequest;
-import hse.coursework.socialnetworkthoughts.dto.post.UpdatePostRequest;
+import hse.coursework.socialnetworkthoughts.dto.IdResponseDto;
+import hse.coursework.socialnetworkthoughts.dto.post.CreatePostRequestDto;
+import hse.coursework.socialnetworkthoughts.dto.post.UpdatePostRequestDto;
 import hse.coursework.socialnetworkthoughts.security.model.User;
 import hse.coursework.socialnetworkthoughts.service.PostService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
-import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
 
-@Tag(name = "Post controller", description = "Post API")
+@Tag(name = "Post controller", description = "API для постов")
 @RequestMapping("/api/v1/post")
 @RestController
 @RequiredArgsConstructor
@@ -28,33 +26,23 @@ public class PostController {
 
     private final PostService postService;
 
-    @Operation(summary = "Create post")
-    @ApiResponse(
-            responseCode = "201",
-            description = "Post created",
-            content = {@Content(mediaType = "application/json", schema = @Schema(implementation = IdResponse.class))})
+    @Operation(summary = "Создать пост")
     @PostMapping
-    public ResponseEntity<IdResponse> createPost(
-            @ModelAttribute @Valid CreatePostWithFilesRequest createPostWithFilesRequest,
+    public ResponseEntity<IdResponseDto> createPost(
+            @ModelAttribute @Valid CreatePostRequestDto createPostRequestDto,
             @AuthenticationPrincipal User user) {
-        return postService.createPost(createPostWithFilesRequest, user);
+        return postService.createPost(createPostRequestDto, user);
     }
 
-    @Operation(summary = "Update post")
-    @ApiResponse(
-            responseCode = "200",
-            description = "Post updated")
+    @Operation(summary = "Изменить пост")
     @PutMapping
     public ResponseEntity<?> updatePost(
-            @RequestBody @Valid UpdatePostRequest updatePostRequest,
+            @RequestBody @Valid UpdatePostRequestDto updatePostRequestDto,
             @AuthenticationPrincipal User user) {
-        return postService.updatePost(updatePostRequest, user);
+        return postService.updatePost(updatePostRequestDto, user);
     }
 
-    @Operation(summary = "Delete post")
-    @ApiResponse(
-            responseCode = "200",
-            description = "Post deleted")
+    @Operation(summary = "Удалить пост")
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deletePostById(
             @Parameter(
@@ -67,16 +55,12 @@ public class PostController {
         return postService.deletePostById(id, user);
     }
 
-    @Operation(summary = "Like post")
-    @ApiResponse(
-            responseCode = "200",
-            description = "Post liked"
-    )
+    @Operation(summary = "Лайкнуть пост")
     @PostMapping("/like/{postId}")
     public ResponseEntity<?> likePost(
             @Parameter(
                     in = ParameterIn.PATH,
-                    description = "Post Id",
+                    description = "Id поста",
                     required = true,
                     schema = @Schema(example = "86ae734e-87d6-44f1-8e7d-991e308b3121"))
             @PathVariable UUID postId,
@@ -84,16 +68,12 @@ public class PostController {
         return postService.likePost(postId, user);
     }
 
-    @Operation(summary = "Unlike post")
-    @ApiResponse(
-            responseCode = "200",
-            description = "Post unliked"
-    )
+    @Operation(summary = "Убрать лайк с поста")
     @DeleteMapping("/unlike/{postId}")
     public ResponseEntity<?> unlikePost(
             @Parameter(
                     in = ParameterIn.PATH,
-                    description = "Post Id",
+                    description = "Id поста",
                     required = true,
                     schema = @Schema(example = "86ae734e-87d6-44f1-8e7d-991e308b3121"))
             @PathVariable UUID postId,

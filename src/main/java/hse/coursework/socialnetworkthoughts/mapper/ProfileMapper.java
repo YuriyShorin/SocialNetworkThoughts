@@ -1,8 +1,8 @@
 package hse.coursework.socialnetworkthoughts.mapper;
 
-import hse.coursework.socialnetworkthoughts.dto.post.PostResponse;
-import hse.coursework.socialnetworkthoughts.dto.profile.ProfileResponse;
-import hse.coursework.socialnetworkthoughts.dto.profile.SearchProfileResponse;
+import hse.coursework.socialnetworkthoughts.dto.post.PostResponseDto;
+import hse.coursework.socialnetworkthoughts.dto.profile.ProfileResponseDto;
+import hse.coursework.socialnetworkthoughts.dto.profile.SearchProfileResponseDto;
 import hse.coursework.socialnetworkthoughts.model.Post;
 import hse.coursework.socialnetworkthoughts.model.Profile;
 import hse.coursework.socialnetworkthoughts.repository.SubscriptionRepository;
@@ -23,12 +23,12 @@ public abstract class ProfileMapper {
     private PostMapper postMapper;
 
     @Mapping(target = "posts", expression = "java(toPostResponseList(profile.getPosts(), profile.getId()))")
-    public abstract ProfileResponse toProfileResponse(Profile profile);
+    public abstract ProfileResponseDto toProfileResponse(Profile profile);
 
     @Mapping(target = "isSubscribed", expression = "java(getSubscribeStatus(profile, currentProfileId))")
-    public abstract SearchProfileResponse toSearchProfileResponse(Profile profile, UUID currentProfileId);
+    public abstract SearchProfileResponseDto toSearchProfileResponse(Profile profile, UUID currentProfileId);
 
-    protected List<PostResponse> toPostResponseList(List<Post> posts, UUID profileId){
+    protected List<PostResponseDto> toPostResponseList(List<Post> posts, UUID profileId){
         return postMapper.postListToPostResponseList(posts, profileId);
     }
     protected Boolean getSubscribeStatus(Profile profile, UUID currentProfileId){

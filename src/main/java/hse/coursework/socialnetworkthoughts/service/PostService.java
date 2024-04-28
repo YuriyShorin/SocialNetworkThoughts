@@ -1,8 +1,8 @@
 package hse.coursework.socialnetworkthoughts.service;
 
-import hse.coursework.socialnetworkthoughts.dto.IdResponse;
-import hse.coursework.socialnetworkthoughts.dto.post.CreatePostWithFilesRequest;
-import hse.coursework.socialnetworkthoughts.dto.post.UpdatePostRequest;
+import hse.coursework.socialnetworkthoughts.dto.IdResponseDto;
+import hse.coursework.socialnetworkthoughts.dto.post.CreatePostRequestDto;
+import hse.coursework.socialnetworkthoughts.dto.post.UpdatePostRequestDto;
 import hse.coursework.socialnetworkthoughts.exception.*;
 import hse.coursework.socialnetworkthoughts.model.Id;
 import hse.coursework.socialnetworkthoughts.model.Post;
@@ -38,17 +38,17 @@ public class PostService {
     private final FileService fileService;
 
     @Transactional
-    public ResponseEntity<IdResponse> createPost(CreatePostWithFilesRequest createPostWithFilesRequest, User user) {
+    public ResponseEntity<IdResponseDto> createPost(CreatePostRequestDto createPostRequestDto, User user) {
         Profile profile = profileRepository.findByUserId(user.getId())
                 .orElseThrow(ProfileNotFoundException::new);
 
         Id id = postRepository.save(new Post()
                 .setProfileId(profile.getId())
-                .setTheme(createPostWithFilesRequest.getTheme())
-                .setContent(createPostWithFilesRequest.getContent())
+                .setTheme(createPostRequestDto.getTheme())
+                .setContent(createPostRequestDto.getContent())
                 .setAuthorId(profile.getId()));
 
-        MultipartFile[] files = createPostWithFilesRequest.getFiles();
+        MultipartFile[] files = createPostRequestDto.getFiles();
 
         if (files != null) {
             Arrays.stream(files)
@@ -59,18 +59,18 @@ public class PostService {
                     });
         }
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(new IdResponse(id.getId()));
+        return ResponseEntity.status(HttpStatus.CREATED).body(new IdResponseDto(id.getId()));
     }
 
-    public ResponseEntity<?> updatePost(UpdatePostRequest updatePostRequest, User user) {
+    public ResponseEntity<?> updatePost(UpdatePostRequestDto updatePostRequestDto, User user) {
         Profile profile = profileRepository.findByUserId(user.getId())
                 .orElseThrow(ProfileNotFoundException::new);
 
-        Post post = postRepository.findByIdAndProfileId(updatePostRequest.getId(), profile.getId())
+        Post post = postRepository.findByIdAndProfileId(updatePostRequestDto.getId(), profile.getId())
                 .orElseThrow(NotPostOwnerException::new);
 
-        post.setTheme(updatePostRequest.getTheme());
-        post.setContent(updatePostRequest.getContent());
+        post.setTheme(updatePostRequestDto.getTheme());
+        post.setContent(updatePostRequestDto.getContent());
         postRepository.update(post);
 
         return ResponseEntity.ok().build();

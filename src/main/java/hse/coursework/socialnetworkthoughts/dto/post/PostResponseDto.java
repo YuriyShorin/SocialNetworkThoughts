@@ -1,31 +1,28 @@
-package hse.coursework.socialnetworkthoughts.dto.feed;
+package hse.coursework.socialnetworkthoughts.dto.post;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
 import java.sql.Timestamp;
+import java.util.List;
 import java.util.UUID;
 
-@Schema(description = "Dto для получения ленты")
+@Schema(description = "Dto для получения поста")
 @Data
 @Accessors(chain = true)
-public class FeedResponse {
+public class PostResponseDto {
 
     @Schema(description = "Id поста", example = "e75e1be9-aadd-4144-9941-7b180cdbcff4")
-    private UUID postId;
+    private UUID id;
 
-    @Schema(description = "Id профиля", example = "e75e1be9-aadd-4144-9941-7b180cdbcff4")
-    private UUID profileId;
-
-    @Schema(description = "Никнейм")
-    private String profileNickname;
-
-    @Schema(description = "Тема поста", example = "Politics")
+    @Schema(description = "Тема поста", example = "Спорт")
     private String theme;
 
     @Schema(description = "Содержимое поста",
-            example = "The elections will take place in Russia on March 17")
+            example = "Металлург стал чемпионом КХЛ")
+    @NotNull(message = "Содержиое поста не может быть пустым")
     private String content;
 
     @Schema(description = "Количество лайков", example = "13656")
@@ -51,4 +48,7 @@ public class FeedResponse {
 
     @Schema(description = "Последнее время редактирования поста", example = "2024-15-02 11:58:00")
     private Timestamp editedAt;
+
+    @Schema(description = "Файлы")
+    private List<byte[]> files;
 }
