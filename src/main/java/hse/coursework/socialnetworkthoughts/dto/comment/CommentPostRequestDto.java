@@ -17,6 +17,6 @@ public class CommentPostRequestDto {
     private UUID postId;
 
     @NotNull(message = "Содержимое комментария не может быть пустым")
-    @Schema(description = "Содержимое поста", example = "Прекрасные пост!")
+    @Schema(description = "Содержимое поста", example = "Прекрасный пост!")
     private String content;
 }

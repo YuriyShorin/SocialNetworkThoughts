@@ -9,5 +9,4 @@ public class SocialNetworkThoughtsApplication {
     public static void main(String[] args) {
         SpringApplication.run(SocialNetworkThoughtsApplication.class, args);
     }
-
 }

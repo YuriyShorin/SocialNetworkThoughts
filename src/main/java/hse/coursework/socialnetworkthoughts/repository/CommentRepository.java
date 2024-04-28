@@ -13,7 +13,7 @@ public interface CommentRepository {
     @Results(value = {
             @Result(property = "id", column = "id")
     })
-    @Select("INSERT INTO Comments(profile_id, post_id, content) " +
+    @Select("INSERT INTO Comments (profile_id, post_id, content) " +
             "VALUES ('${profileId}', '${postId}', '${content}') RETURNING id;")
     Id save(Comment comment);
 
@@ -23,7 +23,7 @@ public interface CommentRepository {
             @Result(property = "postId", column = "post_id"),
             @Result(property = "content", column = "content"),
             @Result(property = "createdAt", column = "created_at"),
-            @Result(property = "editedAt", column = "editedAt"),
+            @Result(property = "editedAt", column = "edited_at"),
     })
     @Select("SELECT * FROM Comments " +
             "WHERE id = '${id}' " +
@@ -35,7 +35,7 @@ public interface CommentRepository {
             "WHERE id = '${id}';")
     void update(Comment comment);
 
-    @Delete("DELETE FROM Comment " +
+    @Delete("DELETE FROM Comments " +
             "WHERE id = '${id}';")
     void deleteById(UUID id);
 }

@@ -130,10 +130,11 @@ public class PostService {
     }
 
     public ResponseEntity<?> commentPost(CommentPostRequestDto commentPostRequestDto, User user) {
-        profileRepository.findByUserId(user.getId()).orElseThrow(ProfileNotFoundException::new);
+        Profile profile = profileRepository.findByUserId(user.getId()).orElseThrow(ProfileNotFoundException::new);
         postRepository.findById(commentPostRequestDto.getPostId()).orElseThrow(PostAlreadyLikedException::new);
 
         Comment comment = commentMapper.toComment(commentPostRequestDto);
+        comment.setProfileId(profile.getId());
         Id id = commentRepository.save(comment);
 
         return ResponseEntity.ok(new IdResponseDto(id.getId()));
@@ -142,7 +143,7 @@ public class PostService {
     public ResponseEntity<?> updateComment(UpdateCommentRequestDto updateCommentRequestDto, User user) {
         Profile profile = profileRepository.findByUserId(user.getId()).orElseThrow(ProfileNotFoundException::new);
 
-        Comment comment = commentRepository.findByIdAndProfileId(updateCommentRequestDto.getCommentId(), profile.getId()).orElseThrow(NotPostOwnerExceptionException::new);
+        Comment comment = commentRepository.findByIdAndProfileId(updateCommentRequestDto.getCommentId(), profile.getId()).orElseThrow(NotCommentOwnerException::new);
         comment.setContent(updateCommentRequestDto.getContent());
         commentRepository.update(comment);
 
@@ -153,7 +154,7 @@ public class PostService {
     public ResponseEntity<?> deleteCommentById(UUID commentId, User user) {
         Profile profile = profileRepository.findByUserId(user.getId()).orElseThrow(ProfileNotFoundException::new);
 
-        commentRepository.findByIdAndProfileId(commentId, profile.getId()).orElseThrow(NotPostOwnerExceptionException::new);
+        commentRepository.findByIdAndProfileId(commentId, profile.getId()).orElseThrow(NotCommentOwnerException::new);
         commentRepository.deleteById(commentId);
 
         return ResponseEntity.ok().build();

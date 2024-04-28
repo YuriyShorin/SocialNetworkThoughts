@@ -49,7 +49,7 @@ public class PostController {
     public ResponseEntity<?> deletePostById(
             @Parameter(
                     in = ParameterIn.PATH,
-                    description = "Post Id",
+                    description = "Id поста",
                     required = true,
                     schema = @Schema(example = "86ae734e-87d6-44f1-8e7d-991e308b3121"))
             @PathVariable UUID id,
@@ -57,7 +57,7 @@ public class PostController {
         return postService.deletePostById(id, user);
     }
 
-    @Operation(summary = "Лайкнуть пост")
+    @Operation(summary = "Оценить пост")
     @PostMapping("/like/{postId}")
     public ResponseEntity<?> likePost(
             @Parameter(
@@ -87,8 +87,7 @@ public class PostController {
     @PostMapping("/comment")
     public ResponseEntity<?> commentPost(
             @RequestBody CommentPostRequestDto commentPostRequestDto,
-            @AuthenticationPrincipal User user
-    ) {
+            @AuthenticationPrincipal User user) {
         return postService.commentPost(commentPostRequestDto, user);
     }
 
@@ -102,13 +101,14 @@ public class PostController {
 
     @Operation(summary = "Удалить комментарий")
     @DeleteMapping("/comment/{commentId}")
-    public ResponseEntity<?> deleteCommentById(@Parameter(
-            in = ParameterIn.PATH,
-            description = "Id комментария",
-            required = true,
-            schema = @Schema(example = "86ae734e-87d6-44f1-8e7d-991e308b3121"))
-                                               @PathVariable UUID commentId,
-                                               @AuthenticationPrincipal User user) {
+    public ResponseEntity<?> deleteCommentById(
+            @Parameter(
+                    in = ParameterIn.PATH,
+                    description = "Id комментария",
+                    required = true,
+                    schema = @Schema(example = "86ae734e-87d6-44f1-8e7d-991e308b3121"))
+            @PathVariable UUID commentId,
+            @AuthenticationPrincipal User user) {
         return postService.deleteCommentById(commentId, user);
     }
 }

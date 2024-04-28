@@ -34,7 +34,7 @@ public class ProfileController {
         return profileService.getProfileById(profileId);
     }
 
-    @Operation(summary = "Подписать на профиль по id")
+    @Operation(summary = "Подписаться на профиль по id")
     @PostMapping("/subscribe/{profileId}")
     public ResponseEntity<?> subscribe(
             @PathVariable UUID profileId,
@@ -42,7 +42,7 @@ public class ProfileController {
         return profileService.subscribe(profileId, user);
     }
 
-    @Operation(summary = "Описаться на профиль по id")
+    @Operation(summary = "Отписаться на профиль по id")
     @PostMapping("/unsubscribe/{profileId}")
     public ResponseEntity<?> unsubscribe(
             @PathVariable UUID profileId,
@@ -50,13 +50,13 @@ public class ProfileController {
         return profileService.unsubscribe(profileId, user);
     }
 
-    @Operation(description = "Получение подписок авторизированного пользователя")
+    @Operation(summary = "Получение подписок авторизированного пользователя")
     @GetMapping("/subscriptions")
     public List<SubscriptionResponseDto> getProfileSubscriptions(@AuthenticationPrincipal User user) {
         return profileService.getProfileSubscriptions(user);
     }
 
-    @Operation(description = "Получение подписок определенного пользователя")
+    @Operation(summary = "Получение подписок определенного пользователя")
     @GetMapping("/{id}/subscriptions")
     public List<SubscriptionResponseDto> getProfileSubscriptionsByProfileId(
             @PathVariable(value = "id") UUID profileId,
@@ -64,13 +64,13 @@ public class ProfileController {
         return profileService.getProfileSubscriptionsByProfileId(profileId, user);
     }
 
-    @Operation(description = "Получение подписчиков авторизированного пользователя")
+    @Operation(summary = "Получение подписчиков авторизированного пользователя")
     @GetMapping("/subscribers")
     public List<SubscriptionResponseDto> getProfileSubscribers(@AuthenticationPrincipal User user) {
         return profileService.getProfileSubscribers(user);
     }
 
-    @Operation(description = "Получение подписчиков определенного пользователя")
+    @Operation(summary = "Получение подписчиков определенного пользователя")
     @GetMapping("/{id}/subscribers")
     public List<SubscriptionResponseDto> getProfileSubscribersByProfileId(
             @PathVariable(value = "id") UUID profileId,
