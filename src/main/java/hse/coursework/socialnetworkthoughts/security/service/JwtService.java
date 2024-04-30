@@ -1,12 +1,15 @@
 package hse.coursework.socialnetworkthoughts.security.service;
 
 
+import hse.coursework.socialnetworkthoughts.enums.ExceptionMessageEnum;
+import hse.coursework.socialnetworkthoughts.exception.CommonRuntimeException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -71,12 +74,18 @@ public class JwtService {
     }
 
     private Claims extractAllClaims(String token) {
-        return Jwts
-                .parserBuilder()
-                .setSigningKey(getSignInKey())
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
+        try {
+            return Jwts
+                    .parserBuilder()
+                    .setSigningKey(getSignInKey())
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody();
+        } catch (Exception exception) {
+            throw new CommonRuntimeException(HttpStatus.UNAUTHORIZED.value(),
+                    ExceptionMessageEnum.INVALID_AUTHENTICATION_TOKEN_MESSAGE.getValue(),
+                    exception.getCause());
+        }
     }
 
     private Key getSignInKey() {

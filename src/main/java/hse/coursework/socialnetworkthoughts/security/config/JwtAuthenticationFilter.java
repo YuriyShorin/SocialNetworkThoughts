@@ -1,14 +1,12 @@
 package hse.coursework.socialnetworkthoughts.security.config;
 
+import hse.coursework.socialnetworkthoughts.enums.SeparatorEnum;
 import hse.coursework.socialnetworkthoughts.security.service.JwtService;
-
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-
 import lombok.RequiredArgsConstructor;
-
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -18,15 +16,12 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
-import org.springframework.web.servlet.HandlerExceptionResolver;
 
 import java.io.IOException;
 
 @Component
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
-
-    private final HandlerExceptionResolver handlerExceptionResolver;
 
     private final JwtService jwtService;
 
@@ -68,7 +63,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             filterChain.doFilter(request, response);
         } catch (Exception exception) {
-            handlerExceptionResolver.resolveException(request, response, null, exception);
+            String message = exception.getMessage();
+            if (message.contains(SeparatorEnum.COLON.getValue())) {
+                String[] errorAndStatus = message.split(SeparatorEnum.COLON.getValue());
+                response.setCharacterEncoding("UTF-8");
+                response.setStatus(Integer.parseInt(errorAndStatus[0]));
+                response.getWriter().write(errorAndStatus[1]);
+            }
         }
     }
 }

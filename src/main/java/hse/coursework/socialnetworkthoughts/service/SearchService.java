@@ -2,7 +2,8 @@ package hse.coursework.socialnetworkthoughts.service;
 
 import hse.coursework.socialnetworkthoughts.dto.feed.FeedResponse;
 import hse.coursework.socialnetworkthoughts.dto.profile.SearchProfileResponseDto;
-import hse.coursework.socialnetworkthoughts.exception.ProfileNotFoundException;
+import hse.coursework.socialnetworkthoughts.enums.ExceptionMessageEnum;
+import hse.coursework.socialnetworkthoughts.exception.CommonRuntimeException;
 import hse.coursework.socialnetworkthoughts.mapper.FeedMapper;
 import hse.coursework.socialnetworkthoughts.mapper.ProfileMapper;
 import hse.coursework.socialnetworkthoughts.model.Feed;
@@ -12,6 +13,7 @@ import hse.coursework.socialnetworkthoughts.repository.LikeRepository;
 import hse.coursework.socialnetworkthoughts.repository.ProfileRepository;
 import hse.coursework.socialnetworkthoughts.security.model.User;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -34,7 +36,7 @@ public class SearchService {
 
     public ResponseEntity<List<SearchProfileResponseDto>> searchProfilesByNickname(String nickname, User user) {
         Profile currentProfile = profileRepository.findByUserId(user.getId())
-                .orElseThrow(ProfileNotFoundException::new);
+                .orElseThrow(() -> new CommonRuntimeException(HttpStatus.NOT_FOUND.value(), ExceptionMessageEnum.PROFILE_NOT_FOUND_MESSAGE.getValue()));
 
         List<Profile> profiles = profileRepository.findByNickname(nickname);
         List<SearchProfileResponseDto> searchProfileResponsDtos = profiles.stream()
@@ -46,7 +48,7 @@ public class SearchService {
 
     public ResponseEntity<List<FeedResponse>> searchPostsByTheme(String theme, User user) {
         Profile currentProfile = profileRepository.findByUserId(user.getId())
-                .orElseThrow(ProfileNotFoundException::new);
+                .orElseThrow(() -> new CommonRuntimeException(HttpStatus.NOT_FOUND.value(), ExceptionMessageEnum.PROFILE_NOT_FOUND_MESSAGE.getValue()));
 
         List<Feed> feeds = feedRepository.getFeedByTheme(theme);
         List<FeedResponse> feedResponses = feeds.stream()

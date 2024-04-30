@@ -3,14 +3,15 @@ package hse.coursework.socialnetworkthoughts.service;
 import hse.coursework.socialnetworkthoughts.dto.post.PostResponseDto;
 import hse.coursework.socialnetworkthoughts.dto.profile.ProfileResponseDto;
 import hse.coursework.socialnetworkthoughts.dto.profile.SubscriptionResponseDto;
-import hse.coursework.socialnetworkthoughts.exception.ProfileNotFoundException;
+import hse.coursework.socialnetworkthoughts.enums.ExceptionMessageEnum;
+import hse.coursework.socialnetworkthoughts.exception.CommonRuntimeException;
 import hse.coursework.socialnetworkthoughts.mapper.ProfileMapper;
 import hse.coursework.socialnetworkthoughts.model.Profile;
 import hse.coursework.socialnetworkthoughts.model.URL;
 import hse.coursework.socialnetworkthoughts.repository.ProfileRepository;
 import hse.coursework.socialnetworkthoughts.security.model.User;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatusCode;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -34,7 +35,7 @@ public class ProfileService {
     public ResponseEntity<ProfileResponseDto> getAuthenticatedUserProfile(User user) {
         Profile profile = profileRepository
                 .findByUserId(user.getId())
-                .orElseThrow(ProfileNotFoundException::new);
+                .orElseThrow(() -> new CommonRuntimeException(HttpStatus.NOT_FOUND.value(), ExceptionMessageEnum.PROFILE_NOT_FOUND_MESSAGE.getValue()));
 
         ProfileResponseDto profileResponseDto = buildProfileResponse(profile);
 
@@ -44,7 +45,7 @@ public class ProfileService {
     public ResponseEntity<ProfileResponseDto> getProfileById(UUID profileId) {
         Profile profile = profileRepository
                 .findById(profileId)
-                .orElseThrow(ProfileNotFoundException::new);
+                .orElseThrow(() -> new CommonRuntimeException(HttpStatus.NOT_FOUND.value(), ExceptionMessageEnum.PROFILE_NOT_FOUND_MESSAGE.getValue()));
 
         ProfileResponseDto profileResponseDto = buildProfileResponse(profile);
 
@@ -53,16 +54,18 @@ public class ProfileService {
 
     public ResponseEntity<?> subscribe(UUID profileId, User user) {
         Profile currentProfile = profileRepository.findByUserId(user.getId())
-                .orElseThrow(ProfileNotFoundException::new);
-        Profile profile = profileRepository.findById(profileId).orElseThrow(ProfileNotFoundException::new);
+                .orElseThrow(() -> new CommonRuntimeException(HttpStatus.NOT_FOUND.value(), ExceptionMessageEnum.PROFILE_NOT_FOUND_MESSAGE.getValue()));
+
+        Profile profile = profileRepository.findById(profileId)
+                .orElseThrow(() -> new CommonRuntimeException(HttpStatus.NOT_FOUND.value(), ExceptionMessageEnum.PROFILE_NOT_FOUND_MESSAGE.getValue()));
 
         if (currentProfile.getId().equals(profile.getId())) {
-            return new ResponseEntity<>("Нельзя подписаться на самого себя", HttpStatusCode.valueOf(209));
+            throw new CommonRuntimeException(HttpStatus.CONFLICT.value(), ExceptionMessageEnum.SUBSCRIBE_TO_YOURSELF_MESSAGE.getValue());
         }
 
         List<UUID> subscriptions = getSubscriptionsByProfileId(currentProfile);
         if (subscriptions.contains(profile.getId())) {
-            return new ResponseEntity<>("Вы уже подписаны на данного пользователя", HttpStatusCode.valueOf(209));
+            throw new CommonRuntimeException(HttpStatus.CONFLICT.value(), ExceptionMessageEnum.ALREADY_SUBSCRIBED_MESSAGE.getValue());
         }
 
         subscriptionsService.save(currentProfile.getId(), profileId);
@@ -78,8 +81,10 @@ public class ProfileService {
 
     public ResponseEntity<?> unsubscribe(UUID profileId, User user) {
         Profile currentProfile = profileRepository.findByUserId(user.getId())
-                .orElseThrow(ProfileNotFoundException::new);
-        Profile profile = profileRepository.findById(profileId).orElseThrow(ProfileNotFoundException::new);
+                .orElseThrow(() -> new CommonRuntimeException(HttpStatus.NOT_FOUND.value(), ExceptionMessageEnum.PROFILE_NOT_FOUND_MESSAGE.getValue()));
+
+        Profile profile = profileRepository.findById(profileId)
+                .orElseThrow(() -> new CommonRuntimeException(HttpStatus.NOT_FOUND.value(), ExceptionMessageEnum.PROFILE_NOT_FOUND_MESSAGE.getValue()));
 
         subscriptionsService.deleteByProfileIdAndSubscriptionProfileId(currentProfile.getId(), profileId);
 
@@ -94,7 +99,7 @@ public class ProfileService {
 
     public List<SubscriptionResponseDto> getProfileSubscriptions(User user) {
         Profile currentProfile = profileRepository.findByUserId(user.getId())
-                .orElseThrow(ProfileNotFoundException::new);
+                .orElseThrow(() -> new CommonRuntimeException(HttpStatus.NOT_FOUND.value(), ExceptionMessageEnum.PROFILE_NOT_FOUND_MESSAGE.getValue()));
 
         List<UUID> profilesSubscriptions = getSubscriptionsByProfileId(currentProfile);
 
@@ -103,7 +108,7 @@ public class ProfileService {
 
     public List<SubscriptionResponseDto> getProfileSubscriptionsByProfileId(UUID profileId, User user) {
         Profile currentProfile = profileRepository.findByUserId(user.getId())
-                .orElseThrow(ProfileNotFoundException::new);
+                .orElseThrow(() -> new CommonRuntimeException(HttpStatus.NOT_FOUND.value(), ExceptionMessageEnum.PROFILE_NOT_FOUND_MESSAGE.getValue()));
 
         List<UUID> profileSubscriptions = subscriptionsService.findSubscriptionsByProfileId(profileId);
         List<UUID> currentProfileSubscriptions = getSubscriptionsByProfileId(currentProfile);
@@ -113,7 +118,7 @@ public class ProfileService {
 
     public List<SubscriptionResponseDto> getProfileSubscribers(User user) {
         Profile currentProfile = profileRepository.findByUserId(user.getId())
-                .orElseThrow(ProfileNotFoundException::new);
+                .orElseThrow(() -> new CommonRuntimeException(HttpStatus.NOT_FOUND.value(), ExceptionMessageEnum.PROFILE_NOT_FOUND_MESSAGE.getValue()));
 
         List<UUID> profilesSubscribers = getSubscribersByProfileId(currentProfile.getId());
         List<UUID> currentProfileSubscriptions = getSubscriptionsByProfileId(currentProfile);
@@ -123,7 +128,7 @@ public class ProfileService {
 
     public List<SubscriptionResponseDto> getProfileSubscribersByProfileId(UUID profileId, User user) {
         Profile currentProfile = profileRepository.findByUserId(user.getId())
-                .orElseThrow(ProfileNotFoundException::new);
+                .orElseThrow(() -> new CommonRuntimeException(HttpStatus.NOT_FOUND.value(), ExceptionMessageEnum.PROFILE_NOT_FOUND_MESSAGE.getValue()));
 
         List<UUID> profilesSubscribers = getSubscribersByProfileId(profileId);
         List<UUID> currentProfileSubscriptions = getSubscriptionsByProfileId(currentProfile);

@@ -5,6 +5,7 @@ import hse.coursework.socialnetworkthoughts.dto.comment.CommentPostRequestDto;
 import hse.coursework.socialnetworkthoughts.dto.comment.UpdateCommentRequestDto;
 import hse.coursework.socialnetworkthoughts.dto.post.CreatePostRequestDto;
 import hse.coursework.socialnetworkthoughts.dto.post.UpdatePostRequestDto;
+import hse.coursework.socialnetworkthoughts.enums.ExceptionMessageEnum;
 import hse.coursework.socialnetworkthoughts.exception.*;
 import hse.coursework.socialnetworkthoughts.mapper.CommentMapper;
 import hse.coursework.socialnetworkthoughts.model.Comment;
@@ -45,7 +46,7 @@ public class PostService {
     @Transactional
     public ResponseEntity<IdResponseDto> createPost(CreatePostRequestDto createPostRequestDto, User user) {
         Profile profile = profileRepository.findByUserId(user.getId())
-                .orElseThrow(ProfileNotFoundException::new);
+                .orElseThrow(() -> new CommonRuntimeException(HttpStatus.NOT_FOUND.value(), ExceptionMessageEnum.PROFILE_NOT_FOUND_MESSAGE.getValue()));
 
         Id id = postRepository.save(new Post()
                 .setProfileId(profile.getId())
@@ -69,10 +70,10 @@ public class PostService {
 
     public ResponseEntity<?> updatePost(UpdatePostRequestDto updatePostRequestDto, User user) {
         Profile profile = profileRepository.findByUserId(user.getId())
-                .orElseThrow(ProfileNotFoundException::new);
+                .orElseThrow(() -> new CommonRuntimeException(HttpStatus.NOT_FOUND.value(), ExceptionMessageEnum.PROFILE_NOT_FOUND_MESSAGE.getValue()));
 
         Post post = postRepository.findByIdAndProfileId(updatePostRequestDto.getId(), profile.getId())
-                .orElseThrow(NotPostOwnerException::new);
+                .orElseThrow(() -> new CommonRuntimeException(HttpStatus.CONFLICT.value(), ExceptionMessageEnum.NOT_POST_OWNER_MESSAGE.getValue()));
 
         post.setTheme(updatePostRequestDto.getTheme());
         post.setContent(updatePostRequestDto.getContent());
@@ -83,10 +84,10 @@ public class PostService {
 
     public ResponseEntity<?> deletePostById(UUID id, User user) {
         Profile profile = profileRepository.findByUserId(user.getId())
-                .orElseThrow(ProfileNotFoundException::new);
+                .orElseThrow(() -> new CommonRuntimeException(HttpStatus.NOT_FOUND.value(), ExceptionMessageEnum.PROFILE_NOT_FOUND_MESSAGE.getValue()));
 
         postRepository.findByIdAndProfileId(id, profile.getId())
-                .orElseThrow(NotPostOwnerException::new);
+                .orElseThrow(() -> new CommonRuntimeException(HttpStatus.CONFLICT.value(), ExceptionMessageEnum.NOT_POST_OWNER_MESSAGE.getValue()));
 
         postRepository.delete(id);
         return ResponseEntity.ok().build();
@@ -94,13 +95,13 @@ public class PostService {
 
     public ResponseEntity<?> likePost(UUID postId, User user) {
         Profile profile = profileRepository.findByUserId(user.getId())
-                .orElseThrow(ProfileNotFoundException::new);
+                .orElseThrow(() -> new CommonRuntimeException(HttpStatus.NOT_FOUND.value(), ExceptionMessageEnum.PROFILE_NOT_FOUND_MESSAGE.getValue()));
 
         Post post = postRepository.findById(postId)
-                .orElseThrow(PostNotFoundException::new);
+                .orElseThrow(() -> new CommonRuntimeException(HttpStatus.NOT_FOUND.value(), ExceptionMessageEnum.POST_NOT_FOUND_MESSAGE.getValue()));
 
         if (likeRepository.findByProfileId(profile.getId(), postId).isPresent()) {
-            throw new PostAlreadyLikedException();
+            throw new CommonRuntimeException(HttpStatus.CONFLICT.value(), ExceptionMessageEnum.POST_ALREADY_LIKED_MESSAGE.getValue());
         }
 
         likeRepository.save(profile.getId(), postId);
@@ -113,13 +114,13 @@ public class PostService {
 
     public ResponseEntity<?> unlikePost(UUID postId, User user) {
         Profile profile = profileRepository.findByUserId(user.getId())
-                .orElseThrow(ProfileNotFoundException::new);
+                .orElseThrow(() -> new CommonRuntimeException(HttpStatus.NOT_FOUND.value(), ExceptionMessageEnum.PROFILE_NOT_FOUND_MESSAGE.getValue()));
 
         Post post = postRepository.findById(postId)
-                .orElseThrow(PostNotFoundException::new);
+                .orElseThrow(() -> new CommonRuntimeException(HttpStatus.NOT_FOUND.value(), ExceptionMessageEnum.POST_NOT_FOUND_MESSAGE.getValue()));
 
         if (likeRepository.findByProfileId(profile.getId(), postId).isEmpty()) {
-            throw new PostNotLikedException();
+            throw new CommonRuntimeException(HttpStatus.CONFLICT.value(), ExceptionMessageEnum.POST_NOT_LIKED_MESSAGE.getValue());
         }
 
         likeRepository.delete(profile.getId(), postId);
@@ -130,8 +131,11 @@ public class PostService {
     }
 
     public ResponseEntity<?> commentPost(CommentPostRequestDto commentPostRequestDto, User user) {
-        Profile profile = profileRepository.findByUserId(user.getId()).orElseThrow(ProfileNotFoundException::new);
-        postRepository.findById(commentPostRequestDto.getPostId()).orElseThrow(PostAlreadyLikedException::new);
+        Profile profile = profileRepository.findByUserId(user.getId())
+                .orElseThrow(() -> new CommonRuntimeException(HttpStatus.NOT_FOUND.value(), ExceptionMessageEnum.PROFILE_NOT_FOUND_MESSAGE.getValue()));
+
+        postRepository.findById(commentPostRequestDto.getPostId())
+                .orElseThrow(() -> new CommonRuntimeException(HttpStatus.CONFLICT.value(), ExceptionMessageEnum.POST_ALREADY_LIKED_MESSAGE.getValue()));
 
         Comment comment = commentMapper.toComment(commentPostRequestDto);
         comment.setProfileId(profile.getId());
@@ -141,9 +145,12 @@ public class PostService {
     }
 
     public ResponseEntity<?> updateComment(UpdateCommentRequestDto updateCommentRequestDto, User user) {
-        Profile profile = profileRepository.findByUserId(user.getId()).orElseThrow(ProfileNotFoundException::new);
+        Profile profile = profileRepository.findByUserId(user.getId())
+                .orElseThrow(() -> new CommonRuntimeException(HttpStatus.NOT_FOUND.value(), ExceptionMessageEnum.PROFILE_NOT_FOUND_MESSAGE.getValue()));
 
-        Comment comment = commentRepository.findByIdAndProfileId(updateCommentRequestDto.getCommentId(), profile.getId()).orElseThrow(NotCommentOwnerException::new);
+        Comment comment = commentRepository.findByIdAndProfileId(updateCommentRequestDto.getCommentId(), profile.getId())
+                .orElseThrow(() -> new CommonRuntimeException(HttpStatus.NOT_FOUND.value(), ExceptionMessageEnum.PROFILE_NOT_FOUND_MESSAGE.getValue()));
+
         comment.setContent(updateCommentRequestDto.getContent());
         commentRepository.update(comment);
 
@@ -152,9 +159,12 @@ public class PostService {
 
 
     public ResponseEntity<?> deleteCommentById(UUID commentId, User user) {
-        Profile profile = profileRepository.findByUserId(user.getId()).orElseThrow(ProfileNotFoundException::new);
+        Profile profile = profileRepository.findByUserId(user.getId())
+                .orElseThrow(() -> new CommonRuntimeException(HttpStatus.NOT_FOUND.value(), ExceptionMessageEnum.PROFILE_NOT_FOUND_MESSAGE.getValue()));
 
-        commentRepository.findByIdAndProfileId(commentId, profile.getId()).orElseThrow(NotCommentOwnerException::new);
+        commentRepository.findByIdAndProfileId(commentId, profile.getId())
+                .orElseThrow(() -> new CommonRuntimeException(HttpStatus.NOT_FOUND.value(), ExceptionMessageEnum.NOT_COMMENT_OWNER_MESSAGE.getValue()));
+
         commentRepository.deleteById(commentId);
 
         return ResponseEntity.ok().build();
