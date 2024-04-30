@@ -37,8 +37,6 @@ public class PostService {
 
     private final LikeRepository likeRepository;
 
-    private final FileRepository fileRepository;
-
     private final CommentRepository commentRepository;
 
     private final CommentMapper commentMapper;
@@ -48,7 +46,7 @@ public class PostService {
         Profile profile = profileRepository.findByUserId(user.getId())
                 .orElseThrow(() -> new CommonRuntimeException(HttpStatus.NOT_FOUND.value(), ExceptionMessageEnum.PROFILE_NOT_FOUND_MESSAGE.getValue()));
 
-        Id id = postRepository.save(new Post()
+        Id postId = postRepository.save(new Post()
                 .setProfileId(profile.getId())
                 .setTheme(createPostRequestDto.getTheme())
                 .setContent(createPostRequestDto.getContent())
@@ -59,13 +57,10 @@ public class PostService {
         if (files != null) {
             Arrays.stream(files)
                     .filter(Objects::nonNull)
-                    .forEach(file -> {
-                        String url = fileService.save(file);
-                        fileRepository.savePicture(id.getId(), url);
-                    });
+                    .forEach(file -> fileService.save(file, postId.getId()));
         }
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(new IdResponseDto(id.getId()));
+        return ResponseEntity.status(HttpStatus.CREATED).body(new IdResponseDto(postId.getId()));
     }
 
     public ResponseEntity<?> updatePost(UpdatePostRequestDto updatePostRequestDto, User user) {

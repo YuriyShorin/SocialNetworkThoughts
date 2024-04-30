@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class URL {
+public class FilePath {
 
-    private String url;
+    private String path;
 }

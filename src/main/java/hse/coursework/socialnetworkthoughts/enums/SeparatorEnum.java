@@ -8,7 +8,8 @@ import lombok.RequiredArgsConstructor;
 public enum SeparatorEnum {
 
     DOT("."),
-    COLON(":");
+    COLON(":"),
+    SLASH("/");
 
     private final String value;
 }

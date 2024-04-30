@@ -6,8 +6,8 @@ import hse.coursework.socialnetworkthoughts.dto.profile.SubscriptionResponseDto;
 import hse.coursework.socialnetworkthoughts.enums.ExceptionMessageEnum;
 import hse.coursework.socialnetworkthoughts.exception.CommonRuntimeException;
 import hse.coursework.socialnetworkthoughts.mapper.ProfileMapper;
+import hse.coursework.socialnetworkthoughts.model.FilePath;
 import hse.coursework.socialnetworkthoughts.model.Profile;
-import hse.coursework.socialnetworkthoughts.model.URL;
 import hse.coursework.socialnetworkthoughts.repository.ProfileRepository;
 import hse.coursework.socialnetworkthoughts.security.model.User;
 import lombok.RequiredArgsConstructor;
@@ -141,9 +141,9 @@ public class ProfileService {
 
         for (PostResponseDto post : profileResponseDto.getPosts()) {
             List<byte[]> files = new ArrayList<>();
-            List<URL> urls = fileService.findUrlsByPostId(post.getId());
-            for (URL url : urls) {
-                files.add(fileService.load(url.getUrl()));
+            List<FilePath> paths = fileService.findPathsByPostId(post.getId());
+            for (FilePath path: paths) {
+                files.add(fileService.load(path.getPath()));
             }
 
             post.setFiles(files);
