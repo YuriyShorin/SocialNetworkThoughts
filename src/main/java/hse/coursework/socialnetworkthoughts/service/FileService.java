@@ -68,7 +68,6 @@ public class FileService {
     public byte[] load(String fileName) {
         try {
             Path path = Path.of(fileName);
-            System.out.println(path);
             Resource resource = new UrlResource(path.toUri());
 
             if (resource.exists() || resource.isReadable()) {

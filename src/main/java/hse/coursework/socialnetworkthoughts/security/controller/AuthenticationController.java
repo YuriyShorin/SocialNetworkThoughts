@@ -7,16 +7,10 @@ import hse.coursework.socialnetworkthoughts.security.model.User;
 import hse.coursework.socialnetworkthoughts.security.service.AuthenticationService;
 import hse.coursework.socialnetworkthoughts.security.service.JwtService;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "Authentication controller", description = "Authentication API")
 @RequestMapping("/api/v1/auth")
@@ -28,20 +22,13 @@ public class AuthenticationController {
 
     private final AuthenticationService authenticationService;
 
-    @Operation(summary = "Signup")
-    @ApiResponse(
-            responseCode = "201",
-            description = "Signed up successfully")
+    @Operation(summary = "Регистрация")
     @PostMapping("/signup")
     public ResponseEntity<?> signup(@RequestBody RegisterUserCredentialsDto registerUserCredentialsDto) {
         return authenticationService.signup(registerUserCredentialsDto);
     }
 
-    @Operation(summary = "Login")
-    @ApiResponse(
-            responseCode = "200",
-            description = "Login is successful",
-            content = {@Content(mediaType = "application/json", schema = @Schema(implementation = JwtTokenDto.class))})
+    @Operation(summary = "Вход")
     @PostMapping("/login")
     public ResponseEntity<JwtTokenDto> login(@RequestBody LoginUserCredentialsDto loginUserCredentialsDTO) {
         User authenticatedUser = authenticationService.authenticate(loginUserCredentialsDTO);
@@ -50,5 +37,11 @@ public class AuthenticationController {
         JwtTokenDto jwtTokenDto = new JwtTokenDto(jwtToken);
 
         return ResponseEntity.ok(jwtTokenDto);
+    }
+
+    @Operation(summary = "Проверка токена")
+    @GetMapping("/me")
+    public ResponseEntity<?> me() {
+        return ResponseEntity.ok().build();
     }
 }
