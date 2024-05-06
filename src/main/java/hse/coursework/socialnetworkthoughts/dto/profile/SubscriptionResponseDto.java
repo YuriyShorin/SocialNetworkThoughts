@@ -11,12 +11,12 @@ import java.util.UUID;
 @Schema(description = "Dto для ответа о подписках пользователя")
 public class SubscriptionResponseDto {
 
-    @Schema(description = "Id профиля, на которого подписан запрашиваемый профиль")
-    private UUID profileId;
+    @Schema(description = "Id профиля", example = "e75e1be9-aadd-4144-9941-7b180cdbcff4")
+    private UUID id;
 
-    @Schema(description = "nickname профиля, на которого подписан запрашиваемый профиль.")
+    @Schema(description = "Никнейм", example = "LoveMyPosts")
     private String nickname;
 
-    @Schema(description = "Подписан ли авторизированный пользователь на этот профиль")
+    @Schema(description = "Флаг, показывающий подписан ли авторизированный пользователь на этот профиль", example = "true")
     private Boolean isSubscribed;
 }

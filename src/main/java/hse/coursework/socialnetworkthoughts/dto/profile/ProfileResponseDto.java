@@ -18,13 +18,13 @@ public class ProfileResponseDto {
     @Schema(description = "Id профиля", example = "e75e1be9-aadd-4144-9941-7b180cdbcff4")
     private UUID id;
 
-    @Schema(description = "Никнейм", example = "loveMyPosts")
+    @Schema(description = "Никнейм", example = "LoveMyPosts")
     private String nickname;
 
-    @Schema(description = "Статус", example = "Sleeping...")
+    @Schema(description = "Статус", example = "Сплю...")
     private String status;
 
-    @Schema(description = "Описание", example = "Best account ever")
+    @Schema(description = "Описание", example = "Лучший аккаунт в мире!")
     private String description;
 
     @Schema(description = "Количество подписок", example = "156")
