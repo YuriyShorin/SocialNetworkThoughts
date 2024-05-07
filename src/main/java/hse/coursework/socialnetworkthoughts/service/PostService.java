@@ -129,12 +129,15 @@ public class PostService {
         Profile profile = profileRepository.findByUserId(user.getId())
                 .orElseThrow(() -> new CommonRuntimeException(HttpStatus.NOT_FOUND.value(), ExceptionMessageEnum.PROFILE_NOT_FOUND_MESSAGE.getValue()));
 
-        postRepository.findById(commentPostRequestDto.getPostId())
-                .orElseThrow(() -> new CommonRuntimeException(HttpStatus.CONFLICT.value(), ExceptionMessageEnum.POST_ALREADY_LIKED_MESSAGE.getValue()));
+        Post post = postRepository.findById(commentPostRequestDto.getPostId())
+                .orElseThrow(() -> new CommonRuntimeException(HttpStatus.NOT_FOUND.value(), ExceptionMessageEnum.POST_NOT_FOUND_MESSAGE.getValue()));
 
         Comment comment = commentMapper.toComment(commentPostRequestDto);
         comment.setProfileId(profile.getId());
+
         Id id = commentRepository.save(comment);
+        post.setComments(post.getComments() + 1);
+        postRepository.update(post);
 
         return ResponseEntity.ok(new IdResponseDto(id.getId()));
     }
@@ -144,7 +147,10 @@ public class PostService {
                 .orElseThrow(() -> new CommonRuntimeException(HttpStatus.NOT_FOUND.value(), ExceptionMessageEnum.PROFILE_NOT_FOUND_MESSAGE.getValue()));
 
         Comment comment = commentRepository.findByIdAndProfileId(updateCommentRequestDto.getCommentId(), profile.getId())
-                .orElseThrow(() -> new CommonRuntimeException(HttpStatus.NOT_FOUND.value(), ExceptionMessageEnum.PROFILE_NOT_FOUND_MESSAGE.getValue()));
+                .orElseThrow(() -> new CommonRuntimeException(HttpStatus.NOT_FOUND.value(), ExceptionMessageEnum.COMMENT_NOT_FOUND_MESSAGE.getValue()));
+
+        postRepository.findById(comment.getPostId())
+                .orElseThrow(() -> new CommonRuntimeException(HttpStatus.NOT_FOUND.value(), ExceptionMessageEnum.POST_NOT_FOUND_MESSAGE.getValue()));
 
         comment.setContent(updateCommentRequestDto.getContent());
         commentRepository.update(comment);
@@ -157,10 +163,15 @@ public class PostService {
         Profile profile = profileRepository.findByUserId(user.getId())
                 .orElseThrow(() -> new CommonRuntimeException(HttpStatus.NOT_FOUND.value(), ExceptionMessageEnum.PROFILE_NOT_FOUND_MESSAGE.getValue()));
 
-        commentRepository.findByIdAndProfileId(commentId, profile.getId())
+        Comment comment = commentRepository.findByIdAndProfileId(commentId, profile.getId())
                 .orElseThrow(() -> new CommonRuntimeException(HttpStatus.NOT_FOUND.value(), ExceptionMessageEnum.NOT_COMMENT_OWNER_MESSAGE.getValue()));
 
+        Post post = postRepository.findById(comment.getPostId())
+                .orElseThrow(() -> new CommonRuntimeException(HttpStatus.NOT_FOUND.value(), ExceptionMessageEnum.POST_ALREADY_LIKED_MESSAGE.getValue()));
+
         commentRepository.deleteById(commentId);
+        post.setComments(post.getComments() - 1);
+        postRepository.update(post);
 
         return ResponseEntity.ok().build();
     }

@@ -39,11 +39,11 @@ public class SearchService {
                 .orElseThrow(() -> new CommonRuntimeException(HttpStatus.NOT_FOUND.value(), ExceptionMessageEnum.PROFILE_NOT_FOUND_MESSAGE.getValue()));
 
         List<Profile> profiles = profileRepository.findByNickname(nickname);
-        List<SearchProfileResponseDto> searchProfileResponsDtos = profiles.stream()
+        List<SearchProfileResponseDto> searchProfileResponseDtos = profiles.stream()
                 .map(profile -> profileMapper.toSearchProfileResponse(profile, currentProfile.getId()))
                 .collect(Collectors.toList());
 
-        return ResponseEntity.ok(searchProfileResponsDtos);
+        return ResponseEntity.ok(searchProfileResponseDtos);
     }
 
     public ResponseEntity<List<FeedResponse>> searchPostsByTheme(String theme, User user) {

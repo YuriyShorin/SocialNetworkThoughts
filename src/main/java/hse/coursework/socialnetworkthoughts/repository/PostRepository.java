@@ -52,7 +52,7 @@ public interface PostRepository {
     Optional<Post> findByIdAndProfileId(UUID id, UUID profileId);
 
     @Update("UPDATE Posts " +
-            "SET theme = '${theme}', content = '${content}', likes = '${likes}' " +
+            "SET theme = '${theme}', content = '${content}', likes = '${likes}', comments = '${comments}' " +
             "WHERE id = '${id}';")
     void update(Post post);
 
