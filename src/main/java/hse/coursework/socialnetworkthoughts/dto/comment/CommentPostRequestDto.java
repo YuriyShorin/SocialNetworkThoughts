@@ -7,7 +7,7 @@ import lombok.experimental.Accessors;
 
 import java.util.UUID;
 
-@Schema(description = "Dto для создания поста")
+@Schema(description = "Dto для создания комментария")
 @Data
 @Accessors(chain = true)
 public class CommentPostRequestDto {
@@ -17,6 +17,6 @@ public class CommentPostRequestDto {
     private UUID postId;
 
     @NotNull(message = "Содержимое комментария не может быть пустым")
-    @Schema(description = "Содержимое поста", example = "Прекрасный пост!")
+    @Schema(description = "Содержимое комментария", example = "Прекрасный пост!")
     private String content;
 }

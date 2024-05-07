@@ -83,6 +83,12 @@ public class PostController {
         return postService.unlikePost(postId, user);
     }
 
+    @Operation(summary = "Получить все комментарии для поста")
+    @GetMapping("/{postId}/comments")
+    public ResponseEntity<?> getComments(@PathVariable UUID postId) {
+        return postService.getComments(postId);
+    }
+
     @Operation(summary = "Прокомментировать пост")
     @PostMapping("/comment")
     public ResponseEntity<?> commentPost(

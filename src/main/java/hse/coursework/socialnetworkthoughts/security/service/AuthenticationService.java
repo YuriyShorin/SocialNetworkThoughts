@@ -17,6 +17,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -30,6 +31,7 @@ public class AuthenticationService {
 
     private final AuthenticationManager authenticationManager;
 
+    @Transactional
     public ResponseEntity<?> signup(RegisterUserCredentialsDto registerUserCredentialsDto) {
         if (userRepository.findByUsername(registerUserCredentialsDto.getUsername()).isPresent()) {
             return ResponseEntity.status(HttpStatus.CONFLICT).build();
@@ -47,6 +49,7 @@ public class AuthenticationService {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
+    @Transactional(readOnly = true)
     public User authenticate(LoginUserCredentialsDto loginUserCredentialsDTO) {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(

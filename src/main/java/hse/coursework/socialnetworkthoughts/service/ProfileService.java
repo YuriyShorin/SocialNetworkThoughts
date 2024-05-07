@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,6 +33,7 @@ public class ProfileService {
 
     private final FileService fileService;
 
+    @Transactional(readOnly = true)
     public ResponseEntity<ProfileResponseDto> getAuthenticatedUserProfile(User user) {
         Profile profile = profileRepository
                 .findByUserId(user.getId())
@@ -42,6 +44,7 @@ public class ProfileService {
         return ResponseEntity.ok(profileResponseDto);
     }
 
+    @Transactional(readOnly = true)
     public ResponseEntity<ProfileResponseDto> getProfileById(UUID profileId) {
         Profile profile = profileRepository
                 .findById(profileId)
@@ -52,6 +55,7 @@ public class ProfileService {
         return ResponseEntity.ok(profileResponseDto);
     }
 
+    @Transactional
     public ResponseEntity<?> subscribe(UUID profileId, User user) {
         Profile currentProfile = profileRepository.findByUserId(user.getId())
                 .orElseThrow(() -> new CommonRuntimeException(HttpStatus.NOT_FOUND.value(), ExceptionMessageEnum.PROFILE_NOT_FOUND_MESSAGE.getValue()));
@@ -79,6 +83,7 @@ public class ProfileService {
         return ResponseEntity.ok().build();
     }
 
+    @Transactional
     public ResponseEntity<?> unsubscribe(UUID profileId, User user) {
         Profile currentProfile = profileRepository.findByUserId(user.getId())
                 .orElseThrow(() -> new CommonRuntimeException(HttpStatus.NOT_FOUND.value(), ExceptionMessageEnum.PROFILE_NOT_FOUND_MESSAGE.getValue()));
@@ -126,6 +131,7 @@ public class ProfileService {
         return buildSubscriptionResponseDtos(profilesSubscribers, currentProfileSubscriptions);
     }
 
+    @Transactional(readOnly = true)
     public List<SubscriptionResponseDto> getProfileSubscribersByProfileId(UUID profileId, User user) {
         Profile currentProfile = profileRepository.findByUserId(user.getId())
                 .orElseThrow(() -> new CommonRuntimeException(HttpStatus.NOT_FOUND.value(), ExceptionMessageEnum.PROFILE_NOT_FOUND_MESSAGE.getValue()));

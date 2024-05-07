@@ -4,6 +4,7 @@ import hse.coursework.socialnetworkthoughts.model.Comment;
 import hse.coursework.socialnetworkthoughts.model.Id;
 import org.apache.ibatis.annotations.*;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -22,6 +23,7 @@ public interface CommentRepository {
             @Result(property = "profileId", column = "profile_id"),
             @Result(property = "postId", column = "post_id"),
             @Result(property = "content", column = "content"),
+            @Result(property = "likes", column = "likes"),
             @Result(property = "createdAt", column = "created_at"),
             @Result(property = "editedAt", column = "edited_at"),
     })
@@ -29,6 +31,19 @@ public interface CommentRepository {
             "WHERE id = '${id}' " +
             "AND profile_id = '${profileId}';")
     Optional<Comment> findByIdAndProfileId(UUID id, UUID profileId);
+
+    @Results(value = {
+            @Result(property = "id", column = "id"),
+            @Result(property = "profileId", column = "profile_id"),
+            @Result(property = "postId", column = "post_id"),
+            @Result(property = "content", column = "content"),
+            @Result(property = "likes", column = "likes"),
+            @Result(property = "createdAt", column = "created_at"),
+            @Result(property = "editedAt", column = "edited_at"),
+    })
+    @Select("SELECT * FROM Comments " +
+            "WHERE post_id = '${postId}';")
+    List<Comment> findByPostId(UUID postId);
 
     @Update("UPDATE Comments " +
             "SET content = '${content}' " +

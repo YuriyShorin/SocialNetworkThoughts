@@ -2,6 +2,7 @@ package hse.coursework.socialnetworkthoughts.service;
 
 import hse.coursework.socialnetworkthoughts.dto.IdResponseDto;
 import hse.coursework.socialnetworkthoughts.dto.comment.CommentPostRequestDto;
+import hse.coursework.socialnetworkthoughts.dto.comment.CommentResponseDto;
 import hse.coursework.socialnetworkthoughts.dto.comment.UpdateCommentRequestDto;
 import hse.coursework.socialnetworkthoughts.dto.post.CreatePostRequestDto;
 import hse.coursework.socialnetworkthoughts.dto.post.UpdatePostRequestDto;
@@ -22,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -63,6 +65,7 @@ public class PostService {
         return ResponseEntity.status(HttpStatus.CREATED).body(new IdResponseDto(postId.getId()));
     }
 
+    @Transactional
     public ResponseEntity<?> updatePost(UpdatePostRequestDto updatePostRequestDto, User user) {
         Profile profile = profileRepository.findByUserId(user.getId())
                 .orElseThrow(() -> new CommonRuntimeException(HttpStatus.NOT_FOUND.value(), ExceptionMessageEnum.PROFILE_NOT_FOUND_MESSAGE.getValue()));
@@ -77,6 +80,7 @@ public class PostService {
         return ResponseEntity.ok().build();
     }
 
+    @Transactional
     public ResponseEntity<?> deletePostById(UUID id, User user) {
         Profile profile = profileRepository.findByUserId(user.getId())
                 .orElseThrow(() -> new CommonRuntimeException(HttpStatus.NOT_FOUND.value(), ExceptionMessageEnum.PROFILE_NOT_FOUND_MESSAGE.getValue()));
@@ -88,6 +92,7 @@ public class PostService {
         return ResponseEntity.ok().build();
     }
 
+    @Transactional
     public ResponseEntity<?> likePost(UUID postId, User user) {
         Profile profile = profileRepository.findByUserId(user.getId())
                 .orElseThrow(() -> new CommonRuntimeException(HttpStatus.NOT_FOUND.value(), ExceptionMessageEnum.PROFILE_NOT_FOUND_MESSAGE.getValue()));
@@ -106,7 +111,7 @@ public class PostService {
         return ResponseEntity.ok().build();
     }
 
-
+    @Transactional
     public ResponseEntity<?> unlikePost(UUID postId, User user) {
         Profile profile = profileRepository.findByUserId(user.getId())
                 .orElseThrow(() -> new CommonRuntimeException(HttpStatus.NOT_FOUND.value(), ExceptionMessageEnum.PROFILE_NOT_FOUND_MESSAGE.getValue()));
@@ -125,6 +130,23 @@ public class PostService {
         return ResponseEntity.ok().build();
     }
 
+    @Transactional(readOnly = true)
+    public ResponseEntity<?> getComments(UUID postId) {
+        List<Comment> comments = commentRepository.findByPostId(postId);
+        List<CommentResponseDto> commentResponseDtos = comments.stream()
+                .map(comment -> new CommentResponseDto()
+                        .setId(comment.getId())
+                        .setProfileId(comment.getProfileId())
+                        .setPostId(comment.getPostId())
+                        .setContent(comment.getContent())
+                        .setLikes(comment.getLikes())
+                        .setCreatedAt(comment.getCreatedAt())
+                        .setEditedAt(comment.getEditedAt())).toList();
+
+        return ResponseEntity.ok().body(commentResponseDtos);
+    }
+
+    @Transactional
     public ResponseEntity<?> commentPost(CommentPostRequestDto commentPostRequestDto, User user) {
         Profile profile = profileRepository.findByUserId(user.getId())
                 .orElseThrow(() -> new CommonRuntimeException(HttpStatus.NOT_FOUND.value(), ExceptionMessageEnum.PROFILE_NOT_FOUND_MESSAGE.getValue()));
@@ -142,6 +164,7 @@ public class PostService {
         return ResponseEntity.ok(new IdResponseDto(id.getId()));
     }
 
+    @Transactional
     public ResponseEntity<?> updateComment(UpdateCommentRequestDto updateCommentRequestDto, User user) {
         Profile profile = profileRepository.findByUserId(user.getId())
                 .orElseThrow(() -> new CommonRuntimeException(HttpStatus.NOT_FOUND.value(), ExceptionMessageEnum.PROFILE_NOT_FOUND_MESSAGE.getValue()));
@@ -158,7 +181,7 @@ public class PostService {
         return ResponseEntity.ok().build();
     }
 
-
+    @Transactional
     public ResponseEntity<?> deleteCommentById(UUID commentId, User user) {
         Profile profile = profileRepository.findByUserId(user.getId())
                 .orElseThrow(() -> new CommonRuntimeException(HttpStatus.NOT_FOUND.value(), ExceptionMessageEnum.PROFILE_NOT_FOUND_MESSAGE.getValue()));

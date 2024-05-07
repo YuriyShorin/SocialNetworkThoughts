@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -30,6 +31,7 @@ public class FeedService {
 
     private final LikeRepository likeRepository;
 
+    @Transactional(readOnly = true)
     public ResponseEntity<?> getFeed(User user) {
         Profile profile = profileRepository.findByUserId(user.getId())
                 .orElseThrow(() -> new CommonRuntimeException(HttpStatus.NOT_FOUND.value(), ExceptionMessageEnum.PROFILE_NOT_FOUND_MESSAGE.getValue()));

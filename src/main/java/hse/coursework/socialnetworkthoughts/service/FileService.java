@@ -12,6 +12,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -31,6 +32,7 @@ public class FileService {
     @Value("${file.storage}")
     private String storage;
 
+    @Transactional
     public String save(MultipartFile file, UUID postId) {
         String fileExtension = StringUtils.getFilenameExtension(file.getOriginalFilename());
 
@@ -61,6 +63,7 @@ public class FileService {
         return fileName;
     }
 
+    @Transactional(readOnly = true)
     public List<FilePath> findPathsByPostId(UUID postId) {
         return fileRepository.findPathsByPostId(postId);
     }

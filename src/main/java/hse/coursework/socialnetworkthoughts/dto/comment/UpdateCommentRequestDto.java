@@ -7,7 +7,7 @@ import lombok.experimental.Accessors;
 
 import java.util.UUID;
 
-@Schema(description = "Dto изменения поста")
+@Schema(description = "Dto изменения комментария")
 @Data
 @Accessors(chain = true)
 public class UpdateCommentRequestDto {
@@ -17,6 +17,6 @@ public class UpdateCommentRequestDto {
     private UUID commentId;
 
     @NotNull(message = "Содержимое комментария не может быть пустым")
-    @Schema(description = "Содержимое поста", example = "Прекрасный пост!")
+    @Schema(description = "Содержимое комментария", example = "Прекрасный пост!")
     private String content;
 }
