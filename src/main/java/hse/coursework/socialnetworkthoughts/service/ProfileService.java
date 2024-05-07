@@ -157,7 +157,7 @@ public class ProfileService {
                     String nickname = getProfileNickname(profileSub);
 
                     return new SubscriptionResponseDto()
-                            .setProfileId(profileSub)
+                            .setId(profileSub)
                             .setIsSubscribed(currentProfileSubscriptions.contains(profileSub))
                             .setNickname(nickname);
                 })
@@ -170,7 +170,7 @@ public class ProfileService {
                     String nickname = getProfileNickname(profileSubscription);
 
                     return new SubscriptionResponseDto()
-                            .setProfileId(profileSubscription)
+                            .setId(profileSubscription)
                             .setIsSubscribed(Boolean.TRUE)
                             .setNickname(nickname);
                 })
