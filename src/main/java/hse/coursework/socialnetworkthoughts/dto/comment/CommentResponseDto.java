@@ -21,6 +21,9 @@ public class CommentResponseDto {
     @Schema(description = "Id поста", example = "e75e1be9-aadd-4144-9941-7b180cdbcff4")
     private UUID postId;
 
+    @Schema(description = "Никнейм автора комментария", example = "LoveMyComments")
+    private String nickname;
+
     @Schema(description = "Содержимое комментария", example = "Прекрасный пост")
     private String content;
 

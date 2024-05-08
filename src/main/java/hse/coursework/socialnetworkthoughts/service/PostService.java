@@ -134,14 +134,18 @@ public class PostService {
     public ResponseEntity<?> getComments(UUID postId) {
         List<Comment> comments = commentRepository.findByPostId(postId);
         List<CommentResponseDto> commentResponseDtos = comments.stream()
-                .map(comment -> new CommentResponseDto()
-                        .setId(comment.getId())
-                        .setProfileId(comment.getProfileId())
-                        .setPostId(comment.getPostId())
-                        .setContent(comment.getContent())
-                        .setLikes(comment.getLikes())
-                        .setCreatedAt(comment.getCreatedAt())
-                        .setEditedAt(comment.getEditedAt())).toList();
+                .map(comment -> {
+                    Profile profile = profileRepository.findById(comment.getProfileId()).orElseThrow();
+                    return new CommentResponseDto()
+                            .setId(comment.getId())
+                            .setProfileId(comment.getProfileId())
+                            .setPostId(comment.getPostId())
+                            .setNickname(profile.getNickname())
+                            .setContent(comment.getContent())
+                            .setLikes(comment.getLikes())
+                            .setCreatedAt(comment.getCreatedAt())
+                            .setEditedAt(comment.getEditedAt());
+                }).toList();
 
         return ResponseEntity.ok().body(commentResponseDtos);
     }
