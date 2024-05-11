@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    <changeSet id="2" author="msalyaev">
+        <sqlFile path="v0.0.2/drop_comments_files.sql" relativeToChangelogFile="true"/>
+        <rollback>
+            <sqlFile path="v0.0.2/rollback_drop_comments_files.sql" relativeToChangelogFile="true"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="3" author="msalyaev">
+        <sqlFile path="v0.0.2/drop_comments_pictures.sql" relativeToChangelogFile="true"/>
+        <rollback>
+            <sqlFile path="v0.0.2/rollback_drop_comments_pictures.sql" relativeToChangelogFile="true"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="4" author="msalyaev">
+        <sqlFile path="v0.0.2/drop_comments_videos.sql" relativeToChangelogFile="true"/>
+        <rollback>
+            <sqlFile path="v0.0.2/rollback_drop_comments_videos.sql" relativeToChangelogFile="true"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="5" author="msalyaev">
+        <sqlFile path="v0.0.2/drop_posts_pictures.sql" relativeToChangelogFile="true"/>
+        <rollback>
+            <sqlFile path="v0.0.2/rollback_drop_posts_pictures.sql" relativeToChangelogFile="true"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="6" author="msalyaev">
+        <sqlFile path="v0.0.2/drop_posts_videos.sql" relativeToChangelogFile="true"/>
+        <rollback>
+            <sqlFile path="v0.0.2/rollback_drop_posts_videos.sql" relativeToChangelogFile="true"/>
+        </rollback>
+    </changeSet>
+</databaseChangeLog>

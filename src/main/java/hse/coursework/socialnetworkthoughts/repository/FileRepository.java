@@ -10,11 +10,11 @@ import java.util.UUID;
 @Mapper
 public interface FileRepository {
 
-    @Select("INSERT INTO Posts_pictures(post_id) " +
+    @Select("INSERT INTO posts_files(post_id) " +
             "VALUES ('${postId}') RETURNING id;")
     Id save(@Param("postId") UUID postId);
 
-    @Update("UPDATE Posts_pictures " +
+    @Update("UPDATE posts_files " +
             "SET url = '${path}' " +
             "WHERE id = '${id}';")
     void savePath(@Param("id") UUID id, @Param("path") String path);
@@ -22,7 +22,7 @@ public interface FileRepository {
     @Results(value = {
             @Result(property = "path", column = "url")
     })
-    @Select("SELECT url FROM Posts_pictures " +
+    @Select("SELECT url FROM posts_files " +
             "WHERE post_id = '${postId}';")
     List<FilePath> findPathsByPostId(@Param("postId") UUID postId);
 }
