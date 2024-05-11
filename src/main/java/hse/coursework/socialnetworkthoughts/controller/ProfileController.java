@@ -2,6 +2,7 @@ package hse.coursework.socialnetworkthoughts.controller;
 
 import hse.coursework.socialnetworkthoughts.dto.profile.ProfileResponseDto;
 import hse.coursework.socialnetworkthoughts.dto.profile.SubscriptionResponseDto;
+import hse.coursework.socialnetworkthoughts.dto.profile.UpdateProfileRequestDto;
 import hse.coursework.socialnetworkthoughts.security.model.User;
 import hse.coursework.socialnetworkthoughts.service.ProfileService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -26,6 +27,14 @@ public class ProfileController {
     @GetMapping
     public ResponseEntity<ProfileResponseDto> getAuthenticatedUserProfile(@AuthenticationPrincipal User user) {
         return profileService.getAuthenticatedUserProfile(user);
+    }
+
+    @Operation(summary = "Изменить профиль")
+    @PostMapping("/update")
+    public ResponseEntity<?> updateProfile(
+            @ModelAttribute UpdateProfileRequestDto updateProfileRequestDto,
+            @AuthenticationPrincipal User user) {
+        return profileService.updateProfile(user, updateProfileRequestDto);
     }
 
     @Operation(summary = "Получить профиль по id")

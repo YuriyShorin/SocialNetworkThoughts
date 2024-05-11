@@ -31,7 +31,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class PostService {
 
-    private final FileService fileService;
+    private final PostFileService postFileService;
 
     private final ProfileRepository profileRepository;
 
@@ -59,7 +59,7 @@ public class PostService {
         if (files != null) {
             Arrays.stream(files)
                     .filter(Objects::nonNull)
-                    .forEach(file -> fileService.save(file, postId.getId()));
+                    .forEach(file -> postFileService.save(file, postId.getId()));
         }
 
         return ResponseEntity.status(HttpStatus.CREATED).body(new IdResponseDto(postId.getId()));

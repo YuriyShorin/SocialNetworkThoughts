@@ -3,6 +3,7 @@ package hse.coursework.socialnetworkthoughts.service;
 import hse.coursework.socialnetworkthoughts.dto.post.PostResponseDto;
 import hse.coursework.socialnetworkthoughts.dto.profile.ProfileResponseDto;
 import hse.coursework.socialnetworkthoughts.dto.profile.SubscriptionResponseDto;
+import hse.coursework.socialnetworkthoughts.dto.profile.UpdateProfileRequestDto;
 import hse.coursework.socialnetworkthoughts.enums.ExceptionMessageEnum;
 import hse.coursework.socialnetworkthoughts.exception.CommonRuntimeException;
 import hse.coursework.socialnetworkthoughts.mapper.ProfileMapper;
@@ -15,10 +16,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -31,7 +31,9 @@ public class ProfileService {
 
     private final ProfileMapper profileMapper;
 
-    private final FileService fileService;
+    private final PostFileService postFileService;
+
+    private final ProfileFileService profileFileService;
 
     @Transactional(readOnly = true)
     public ResponseEntity<ProfileResponseDto> getAuthenticatedUserProfile(User user) {
@@ -147,9 +149,9 @@ public class ProfileService {
 
         for (PostResponseDto post : profileResponseDto.getPosts()) {
             List<byte[]> files = new ArrayList<>();
-            List<FilePath> paths = fileService.findPathsByPostId(post.getId());
-            for (FilePath path: paths) {
-                files.add(fileService.load(path.getPath()));
+            List<FilePath> paths = postFileService.findPathsByPostId(post.getId());
+            for (FilePath path : paths) {
+                files.add(postFileService.load(path.getPath()));
             }
 
             post.setFiles(files);
@@ -195,5 +197,29 @@ public class ProfileService {
 
     private List<UUID> getSubscriptionsByProfileId(Profile currentProfile) {
         return subscriptionsService.findSubscriptionsByProfileId(currentProfile.getId());
+    }
+
+    @Transactional
+    public ResponseEntity<?> updateProfile(User user, UpdateProfileRequestDto updateProfileRequestDto) {
+        Profile currentProfile = profileRepository.findByUserId(user.getId())
+                .orElseThrow(() -> new CommonRuntimeException(HttpStatus.NOT_FOUND.value(), ExceptionMessageEnum.PROFILE_NOT_FOUND_MESSAGE.getValue()));
+
+        if (updateProfileRequestDto.getStatus() != null) {
+            currentProfile.setStatus(updateProfileRequestDto.getStatus());
+        }
+
+        if (updateProfileRequestDto.getNickname() != null) {
+            currentProfile.setNickname(updateProfileRequestDto.getNickname());
+        }
+
+        profileRepository.update(currentProfile);
+
+        MultipartFile picture = updateProfileRequestDto.getProfilePicture();
+
+        if (picture != null) {
+            profileFileService.save(picture, currentProfile.getId());
+        }
+
+        return ResponseEntity.ok().build();
     }
 }
