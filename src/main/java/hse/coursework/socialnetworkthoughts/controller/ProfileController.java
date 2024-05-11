@@ -30,7 +30,7 @@ public class ProfileController {
     }
 
     @Operation(summary = "Изменить профиль")
-    @PostMapping("/update")
+    @PutMapping
     public ResponseEntity<?> updateProfile(
             @ModelAttribute UpdateProfileRequestDto updateProfileRequestDto,
             @AuthenticationPrincipal User user) {
