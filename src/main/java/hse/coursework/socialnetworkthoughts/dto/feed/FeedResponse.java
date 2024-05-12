@@ -21,6 +21,9 @@ public class FeedResponse {
     @Schema(description = "Никнейм")
     private String profileNickname;
 
+    @Schema(description = "Аватарка профиля")
+    private byte[] profileImage;
+
     @Schema(description = "Тема поста", example = "Politics")
     private String theme;
 

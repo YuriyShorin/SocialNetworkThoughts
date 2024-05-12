@@ -151,7 +151,7 @@ public class ProfileService {
             List<byte[]> files = new ArrayList<>();
             List<FilePath> paths = postFileService.findPathsByPostId(post.getId());
             for (FilePath path : paths) {
-                files.add(postFileService.load(path.getPath()));
+                files.add(postFileService.loadFile(path.getPath()));
             }
 
             post.setFiles(files);
@@ -159,29 +159,35 @@ public class ProfileService {
         return profileResponseDto;
     }
 
+    private byte[] getProfileImage(UUID profileId) {
+        FilePath profileImage = profileFileService.findPathsByProfileId(profileId);
+
+        if (profileImage == null) {
+            return new byte[0];
+        }
+
+        return profileFileService.loadFile(profileImage.getPath());
+    }
+
     private List<SubscriptionResponseDto> buildSubscriptionResponseDtos(List<UUID> profileSubs, List<UUID> currentProfileSubscriptions) {
         return profileSubs.stream()
-                .map(profileSub -> {
-                    String nickname = getProfileNickname(profileSub);
-
-                    return new SubscriptionResponseDto()
-                            .setId(profileSub)
-                            .setIsSubscribed(currentProfileSubscriptions.contains(profileSub))
-                            .setNickname(nickname);
-                })
+                .map(profileSub -> new SubscriptionResponseDto()
+                        .setId(profileSub)
+                        .setProfileImage(getProfileImage(profileSub))
+                        .setIsSubscribed(currentProfileSubscriptions.contains(profileSub))
+                        .setNickname(getProfileNickname(profileSub))
+                )
                 .collect(Collectors.toList());
     }
 
     private List<SubscriptionResponseDto> buildSubscriptionResponseDtos(List<UUID> currentProfileSubscriptions) {
         return currentProfileSubscriptions.stream()
-                .map(profileSubscription -> {
-                    String nickname = getProfileNickname(profileSubscription);
-
-                    return new SubscriptionResponseDto()
-                            .setId(profileSubscription)
-                            .setIsSubscribed(Boolean.TRUE)
-                            .setNickname(nickname);
-                })
+                .map(profileSubscription -> new SubscriptionResponseDto()
+                        .setId(profileSubscription)
+                        .setProfileImage(getProfileImage(profileSubscription))
+                        .setIsSubscribed(Boolean.TRUE)
+                        .setNickname(getProfileNickname(profileSubscription))
+                )
                 .collect(Collectors.toList());
     }
 

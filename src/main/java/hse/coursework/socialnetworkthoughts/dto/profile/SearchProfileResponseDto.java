@@ -17,6 +17,9 @@ public class SearchProfileResponseDto {
     @Schema(description = "Никнейм", example = "loveMyPosts")
     private String nickname;
 
+    @Schema(description = "Аватарка профиля")
+    private byte[] profileImage;
+
     @Schema(description = "Флаг, показывающий подписан ли авторизированный пользователь на этот профиль", example = "true")
     private Boolean isSubscribed;
 }

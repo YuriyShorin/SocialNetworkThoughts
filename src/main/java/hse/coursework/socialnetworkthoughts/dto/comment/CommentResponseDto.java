@@ -18,6 +18,9 @@ public class CommentResponseDto {
     @Schema(description = "Id профиля", example = "e75e1be9-aadd-4144-9941-7b180cdbcff4")
     private UUID profileId;
 
+    @Schema(description = "Аватарка профиля")
+    private byte[] profileImage;
+
     @Schema(description = "Id поста", example = "e75e1be9-aadd-4144-9941-7b180cdbcff4")
     private UUID postId;
 

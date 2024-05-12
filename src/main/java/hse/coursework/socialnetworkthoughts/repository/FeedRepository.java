@@ -29,7 +29,7 @@ public interface FeedRepository {
     })
     @Select("SELECT p.id AS post_id, p.theme, p.content, p.likes, p.reposts, p.comments, p.views, " +
             "p.is_repost, p.author_id, p.created_at, p.edited_at, " +
-            "pr.id, pr.nickname FROM Subscriptions s " +
+            "pr.id AS profile_id, pr.nickname FROM Subscriptions s " +
             "JOIN Posts p ON s.subscription_profile_id = p.profile_id " +
             "JOIN Profiles pr ON s.subscription_profile_id = pr.id " +
             "WHERE s.profile_id = '${profileId}' " +
@@ -54,7 +54,7 @@ public interface FeedRepository {
     })
     @Select("SELECT p.id AS post_id, p.theme, p.content, p.likes, p.reposts, p.comments, p.views, " +
             "p.is_repost, p.author_id, p.created_at, p.edited_at, " +
-            "pr.id, pr.nickname FROM Posts p " +
+            "pr.id AS profile_id, pr.nickname FROM Posts p " +
             "JOIN Profiles pr ON p.profile_id = pr.id " +
             "WHERE p.theme ILIKE CONCAT('${theme}', '%') " +
             "ORDER BY p.created_at DESC;"

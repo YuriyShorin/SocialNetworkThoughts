@@ -136,15 +136,8 @@ public class PostService {
         List<CommentResponseDto> commentResponseDtos = comments.stream()
                 .map(comment -> {
                     Profile profile = profileRepository.findById(comment.getProfileId()).orElseThrow();
-                    return new CommentResponseDto()
-                            .setId(comment.getId())
-                            .setProfileId(comment.getProfileId())
-                            .setPostId(comment.getPostId())
-                            .setNickname(profile.getNickname())
-                            .setContent(comment.getContent())
-                            .setLikes(comment.getLikes())
-                            .setCreatedAt(comment.getCreatedAt())
-                            .setEditedAt(comment.getEditedAt());
+                    CommentResponseDto commentResponseDto = commentMapper.toCommentResponseDto(comment);
+                    return commentResponseDto.setNickname(profile.getNickname());
                 }).toList();
 
         return ResponseEntity.ok().body(commentResponseDtos);

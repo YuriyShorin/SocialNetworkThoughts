@@ -4,6 +4,8 @@ import hse.coursework.socialnetworkthoughts.enums.ExceptionMessageEnum;
 import hse.coursework.socialnetworkthoughts.enums.SeparatorEnum;
 import hse.coursework.socialnetworkthoughts.exception.CommonRuntimeException;
 import hse.coursework.socialnetworkthoughts.model.Id;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -16,6 +18,12 @@ import java.nio.file.StandardCopyOption;
 import java.util.UUID;
 
 public interface IFileService {
+
+    Id saveFile(UUID id);
+
+    String getStorage();
+
+    void savePath(UUID id, String path);
 
     @Transactional
     default String save(MultipartFile file, UUID postId) {
@@ -38,6 +46,23 @@ public interface IFileService {
         return path.toString();
     }
 
+    default byte[] loadFile(String fileName) {
+        try {
+            Path path = Path.of(fileName);
+            Resource resource = new UrlResource(path.toUri());
+
+            if (resource.exists() || resource.isReadable()) {
+                return resource.getContentAsByteArray();
+            } else {
+                throw new CommonRuntimeException(HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                        ExceptionMessageEnum.UNEXPECTED_ERROR_MESSAGE.getValue());
+            }
+        } catch (IOException e) {
+            throw new CommonRuntimeException(HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                    ExceptionMessageEnum.UNEXPECTED_ERROR_MESSAGE.getValue(), e.getCause());
+        }
+    }
+
     private String generateFileName(String fileExtension, UUID id) {
         Id fileId = saveFile(id);
         String fileName = fileId.getId().toString().concat(SeparatorEnum.DOT.getValue()).concat(fileExtension);
@@ -47,10 +72,4 @@ public interface IFileService {
 
         return fileName;
     }
-
-    Id saveFile(UUID id);
-
-    void savePath(UUID id, String path);
-
-    String getStorage();
 }

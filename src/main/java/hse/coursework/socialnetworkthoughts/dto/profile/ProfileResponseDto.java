@@ -33,6 +33,9 @@ public class ProfileResponseDto {
     @Schema(description = "Количество подписчиков", example = "3050134")
     private Long subscribers;
 
+    @Schema(description = "Аватарка профиля")
+    private byte[] profileImage;
+
     @Schema(description = "Список постов")
     List<PostResponseDto> posts;
 }

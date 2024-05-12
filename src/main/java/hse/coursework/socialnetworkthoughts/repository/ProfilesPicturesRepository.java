@@ -1,10 +1,8 @@
 package hse.coursework.socialnetworkthoughts.repository;
 
+import hse.coursework.socialnetworkthoughts.model.FilePath;
 import hse.coursework.socialnetworkthoughts.model.Id;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Select;
-import org.apache.ibatis.annotations.Update;
+import org.apache.ibatis.annotations.*;
 
 import java.util.UUID;
 
@@ -19,4 +17,11 @@ public interface ProfilesPicturesRepository {
             "SET url = '${path}' " +
             "WHERE id = '${id}';")
     void savePath(@Param("id") UUID id, @Param("path") String path);
+
+    @Results(value = {
+            @Result(property = "path", column = "url")
+    })
+    @Select("SELECT url FROM profiles_pictures " +
+            "WHERE profile_id = '${profileId}';")
+    FilePath findPathsByProfileId(UUID profileId);
 }
