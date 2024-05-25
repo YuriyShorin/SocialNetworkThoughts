@@ -31,7 +31,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class PostService {
 
-    private final PostFileService postFileService;
+    private final PostImageService postFileService;
 
     private final ProfileRepository profileRepository;
 
@@ -54,12 +54,12 @@ public class PostService {
                 .setContent(createPostRequestDto.getContent())
                 .setAuthorId(profile.getId()));
 
-        MultipartFile[] files = createPostRequestDto.getFiles();
+        MultipartFile[] images = createPostRequestDto.getImages();
 
-        if (files != null) {
-            Arrays.stream(files)
+        if (images != null) {
+            Arrays.stream(images)
                     .filter(Objects::nonNull)
-                    .forEach(file -> postFileService.save(file, postId.getId()));
+                    .forEach(image -> postFileService.save(image, postId.getId()));
         }
 
         return ResponseEntity.status(HttpStatus.CREATED).body(new IdResponseDto(postId.getId()));
@@ -192,6 +192,34 @@ public class PostService {
         commentRepository.deleteById(commentId);
         post.setComments(post.getComments() - 1);
         postRepository.update(post);
+
+        return ResponseEntity.ok().build();
+    }
+
+    @Transactional
+    public ResponseEntity<?> repost(UUID postId, User user) {
+        Profile profile = profileRepository.findByUserId(user.getId())
+                .orElseThrow(() -> new CommonRuntimeException(HttpStatus.NOT_FOUND.value(), ExceptionMessageEnum.PROFILE_NOT_FOUND_MESSAGE.getValue()));
+
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new CommonRuntimeException(HttpStatus.NOT_FOUND.value(), ExceptionMessageEnum.POST_ALREADY_LIKED_MESSAGE.getValue()));
+
+        if (post.getAuthorId() == profile.getId()) {
+            throw new CommonRuntimeException(HttpStatus.CONFLICT.value(), ExceptionMessageEnum.REPOSTING_OWN_POST_MESSAGE.getValue());
+        }
+
+        Post repost = new Post()
+                .setProfileId(profile.getId())
+                .setContent(post.getContent())
+                .setLikes(post.getLikes())
+                .setComments(post.getComments())
+                .setReposts(post.getReposts())
+                .setViews(post.getViews())
+                .setIsRepost(true)
+                .setAuthorId(post.getProfileId())
+                .setCreatedAt(post.getCreatedAt())
+                .setEditedAt(post.getEditedAt());
+        postRepository.save(repost);
 
         return ResponseEntity.ok().build();
     }

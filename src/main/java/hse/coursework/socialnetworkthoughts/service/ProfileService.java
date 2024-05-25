@@ -7,7 +7,7 @@ import hse.coursework.socialnetworkthoughts.dto.profile.UpdateProfileRequestDto;
 import hse.coursework.socialnetworkthoughts.enums.ExceptionMessageEnum;
 import hse.coursework.socialnetworkthoughts.exception.CommonRuntimeException;
 import hse.coursework.socialnetworkthoughts.mapper.ProfileMapper;
-import hse.coursework.socialnetworkthoughts.model.FilePath;
+import hse.coursework.socialnetworkthoughts.model.ImagePath;
 import hse.coursework.socialnetworkthoughts.model.Profile;
 import hse.coursework.socialnetworkthoughts.repository.ProfileRepository;
 import hse.coursework.socialnetworkthoughts.security.model.User;
@@ -31,9 +31,9 @@ public class ProfileService {
 
     private final ProfileMapper profileMapper;
 
-    private final PostFileService postFileService;
+    private final PostImageService postImageService;
 
-    private final ProfileFileService profileFileService;
+    private final ProfileImageService profileImageService;
 
     @Transactional(readOnly = true)
     public ResponseEntity<ProfileResponseDto> getAuthenticatedUserProfile(User user) {
@@ -148,25 +148,25 @@ public class ProfileService {
         ProfileResponseDto profileResponseDto = profileMapper.toProfileResponse(profile);
 
         for (PostResponseDto post : profileResponseDto.getPosts()) {
-            List<byte[]> files = new ArrayList<>();
-            List<FilePath> paths = postFileService.findPathsByPostId(post.getId());
-            for (FilePath path : paths) {
-                files.add(postFileService.loadFile(path.getPath()));
+            List<byte[]> images = new ArrayList<>();
+            List<ImagePath> paths = postImageService.findPathsByPostId(post.getId());
+            for (ImagePath path : paths) {
+                images.add(postImageService.loadImage(path.getPath()));
             }
 
-            post.setFiles(files);
+            post.setImages(images);
         }
         return profileResponseDto;
     }
 
     private byte[] getProfileImage(UUID profileId) {
-        FilePath profileImage = profileFileService.findPathsByProfileId(profileId);
+        ImagePath profileImage = profileImageService.findPathsByProfileId(profileId);
 
         if (profileImage == null) {
             return new byte[0];
         }
 
-        return profileFileService.loadFile(profileImage.getPath());
+        return profileImageService.loadImage(profileImage.getPath());
     }
 
     private List<SubscriptionResponseDto> buildSubscriptionResponseDtos(List<UUID> profileSubs, List<UUID> currentProfileSubscriptions) {
@@ -223,7 +223,7 @@ public class ProfileService {
         MultipartFile picture = updateProfileRequestDto.getProfilePicture();
 
         if (picture != null) {
-            profileFileService.save(picture, currentProfile.getId());
+            profileImageService.save(picture, currentProfile.getId());
         }
 
         return ResponseEntity.ok().build();

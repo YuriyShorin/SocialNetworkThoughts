@@ -17,9 +17,9 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.UUID;
 
-public interface IFileService {
+public interface IImageService {
 
-    Id saveFile(UUID id);
+    Id saveImage(UUID id);
 
     String getStorage();
 
@@ -34,7 +34,7 @@ public interface IFileService {
                     ExceptionMessageEnum.COULD_NOT_DETERMINE_FILE_FORMAT_MESSAGE.getValue());
         }
 
-        Path path = Path.of(getStorage()).resolve(StringUtils.cleanPath(generateFileName(fileExtension, postId)));
+        Path path = Path.of(getStorage()).resolve(StringUtils.cleanPath(generateImageName(fileExtension, postId)));
         try {
             Files.copy(file.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException e) {
@@ -46,9 +46,9 @@ public interface IFileService {
         return path.toString();
     }
 
-    default byte[] loadFile(String fileName) {
+    default byte[] loadImage(String imageName) {
         try {
-            Path path = Path.of(fileName);
+            Path path = Path.of(imageName);
             Resource resource = new UrlResource(path.toUri());
 
             if (resource.exists() || resource.isReadable()) {
@@ -63,13 +63,13 @@ public interface IFileService {
         }
     }
 
-    private String generateFileName(String fileExtension, UUID id) {
-        Id fileId = saveFile(id);
-        String fileName = fileId.getId().toString().concat(SeparatorEnum.DOT.getValue()).concat(fileExtension);
+    private String generateImageName(String fileExtension, UUID id) {
+        Id imageId = saveImage(id);
+        String imageName = imageId.getId().toString().concat(SeparatorEnum.DOT.getValue()).concat(fileExtension);
 
-        String path = getStorage().concat(SeparatorEnum.SLASH.getValue()).concat(fileName);
-        savePath(fileId.getId(), path);
+        String path = getStorage().concat(SeparatorEnum.SLASH.getValue()).concat(imageName);
+        savePath(imageId.getId(), path);
 
-        return fileName;
+        return imageName;
     }
 }

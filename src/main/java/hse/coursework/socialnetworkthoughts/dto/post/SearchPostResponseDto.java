@@ -49,6 +49,6 @@ public class SearchPostResponseDto {
     @Schema(description = "Последнее время редактирования поста", example = "2024-15-02 11:58:00")
     private Timestamp editedAt;
 
-    @Schema(description = "Файлы")
-    private List<byte[]> files;
+    @Schema(description = "Изображения")
+    private List<byte[]> images;
 }

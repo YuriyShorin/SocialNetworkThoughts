@@ -3,11 +3,11 @@ package hse.coursework.socialnetworkthoughts.mapper;
 import hse.coursework.socialnetworkthoughts.dto.post.PostResponseDto;
 import hse.coursework.socialnetworkthoughts.dto.profile.ProfileResponseDto;
 import hse.coursework.socialnetworkthoughts.dto.profile.SearchProfileResponseDto;
-import hse.coursework.socialnetworkthoughts.model.FilePath;
+import hse.coursework.socialnetworkthoughts.model.ImagePath;
 import hse.coursework.socialnetworkthoughts.model.Post;
 import hse.coursework.socialnetworkthoughts.model.Profile;
 import hse.coursework.socialnetworkthoughts.repository.SubscriptionRepository;
-import hse.coursework.socialnetworkthoughts.service.ProfileFileService;
+import hse.coursework.socialnetworkthoughts.service.ProfileImageService;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
@@ -23,7 +23,7 @@ public abstract class ProfileMapper {
     private SubscriptionRepository subscriptionRepository;
 
     @Autowired
-    private ProfileFileService profileFileService;
+    private ProfileImageService profileFileService;
 
     @Autowired
     private PostMapper postMapper;
@@ -47,12 +47,12 @@ public abstract class ProfileMapper {
 
     @Named("getProfileImage")
     protected byte[] getProfileImage(UUID profileId) {
-        FilePath profileImage = profileFileService.findPathsByProfileId(profileId);
+        ImagePath profileImage = profileFileService.findPathsByProfileId(profileId);
 
         if (profileImage == null) {
             return new byte[0];
         }
 
-        return profileFileService.loadFile(profileImage.getPath());
+        return profileFileService.loadImage(profileImage.getPath());
     }
 }

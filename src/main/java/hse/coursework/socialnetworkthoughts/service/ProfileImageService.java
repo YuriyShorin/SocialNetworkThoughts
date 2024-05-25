@@ -1,9 +1,9 @@
 package hse.coursework.socialnetworkthoughts.service;
 
-import hse.coursework.socialnetworkthoughts.model.FilePath;
+import hse.coursework.socialnetworkthoughts.model.ImagePath;
 import hse.coursework.socialnetworkthoughts.model.Id;
-import hse.coursework.socialnetworkthoughts.repository.ProfilesPicturesRepository;
-import hse.coursework.socialnetworkthoughts.service.api.IFileService;
+import hse.coursework.socialnetworkthoughts.repository.ProfilesImagesRepository;
+import hse.coursework.socialnetworkthoughts.service.api.IImageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -13,21 +13,21 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-public class ProfileFileService implements IFileService {
+public class ProfileImageService implements IImageService {
 
-    private final ProfilesPicturesRepository repository;
+    private final ProfilesImagesRepository profilesImagesRepository;
 
     @Value("${file.storage}")
     private String storage;
 
     @Override
-    public Id saveFile(UUID id) {
-        return repository.save(id);
+    public Id saveImage(UUID id) {
+        return profilesImagesRepository.save(id);
     }
 
     @Override
     public void savePath(UUID id, String path) {
-        repository.savePath(id, path);
+        profilesImagesRepository.savePath(id, path);
     }
 
     @Override
@@ -36,7 +36,7 @@ public class ProfileFileService implements IFileService {
     }
 
     @Transactional(readOnly = true)
-    public FilePath findPathsByProfileId(UUID profileId) {
-        return repository.findPathsByProfileId(profileId);
+    public ImagePath findPathsByProfileId(UUID profileId) {
+        return profilesImagesRepository.findPathsByProfileId(profileId);
     }
 }

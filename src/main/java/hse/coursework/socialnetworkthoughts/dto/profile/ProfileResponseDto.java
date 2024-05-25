@@ -24,9 +24,6 @@ public class ProfileResponseDto {
     @Schema(description = "Статус", example = "Сплю...")
     private String status;
 
-    @Schema(description = "Описание", example = "Лучший аккаунт в мире!")
-    private String description;
-
     @Schema(description = "Количество подписок", example = "156")
     private Long subscribes;
 

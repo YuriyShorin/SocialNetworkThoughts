@@ -22,6 +22,8 @@ public enum ExceptionMessageEnum {
     POST_ALREADY_LIKED_MESSAGE("Вы уже оценили этот пост"),
     POST_NOT_LIKED_MESSAGE("Вы еще не оценили этот комментарий"),
 
+    REPOSTING_OWN_POST_MESSAGE("Вы не можете репостнуть свой пост"),
+
     COULD_NOT_DETERMINE_FILE_FORMAT_MESSAGE("Не удалось определить формат файла"),
 
     UNEXPECTED_ERROR_MESSAGE("Непредвиденная ошибка");

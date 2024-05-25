@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class FilePath {
+public class ImagePath {
 
     private String path;
 }

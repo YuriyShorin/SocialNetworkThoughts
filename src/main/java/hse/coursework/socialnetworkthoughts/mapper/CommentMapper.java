@@ -3,8 +3,8 @@ package hse.coursework.socialnetworkthoughts.mapper;
 import hse.coursework.socialnetworkthoughts.dto.comment.CommentPostRequestDto;
 import hse.coursework.socialnetworkthoughts.dto.comment.CommentResponseDto;
 import hse.coursework.socialnetworkthoughts.model.Comment;
-import hse.coursework.socialnetworkthoughts.model.FilePath;
-import hse.coursework.socialnetworkthoughts.service.ProfileFileService;
+import hse.coursework.socialnetworkthoughts.model.ImagePath;
+import hse.coursework.socialnetworkthoughts.service.ProfileImageService;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
@@ -16,7 +16,7 @@ import java.util.UUID;
 public abstract class CommentMapper {
 
     @Autowired
-    private ProfileFileService profileFileService;
+    private ProfileImageService profileFileService;
 
     public abstract Comment toComment(CommentPostRequestDto commentPostRequestDto);
 
@@ -25,13 +25,13 @@ public abstract class CommentMapper {
 
     @Named("getProfileImage")
     protected byte[] getProfileImage(UUID profileId) {
-        FilePath profileImage = profileFileService.findPathsByProfileId(profileId);
+        ImagePath profileImage = profileFileService.findPathsByProfileId(profileId);
 
         if (profileImage == null) {
             return new byte[0];
         }
 
-        return profileFileService.loadFile(profileImage.getPath());
+        return profileFileService.loadImage(profileImage.getPath());
     }
 }
 

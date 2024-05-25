@@ -20,6 +20,6 @@ public class CreatePostRequestDto {
     @NotNull(message = "Содержисое поста не может быть пустым")
     private String content;
 
-    @Schema(description = "Файлы")
-    private MultipartFile[] files;
+    @Schema(description = "Изображения")
+    private MultipartFile[] images;
 }

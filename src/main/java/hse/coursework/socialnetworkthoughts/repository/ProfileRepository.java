@@ -19,7 +19,6 @@ public interface ProfileRepository {
             @Result(property = "userId", column = "user_id"),
             @Result(property = "nickname", column = "nickname"),
             @Result(property = "status", column = "status"),
-            @Result(property = "description", column = "description"),
             @Result(property = "subscribes", column = "subscribes"),
             @Result(property = "subscribers", column = "subscribers"),
             @Result(property = "createdAt", column = "created_at"),
@@ -35,7 +34,6 @@ public interface ProfileRepository {
             @Result(property = "userId", column = "user_id"),
             @Result(property = "nickname", column = "nickname"),
             @Result(property = "status", column = "status"),
-            @Result(property = "description", column = "description"),
             @Result(property = "subscribes", column = "subscribes"),
             @Result(property = "subscribers", column = "subscribers"),
             @Result(property = "createdAt", column = "created_at"),
@@ -50,15 +48,15 @@ public interface ProfileRepository {
             @Result(property = "id", column = "id"),
             @Result(property = "nickname", column = "nickname"),
             @Result(property = "status", column = "status"),
-            @Result(property = "description", column = "description"),
             @Result(property = "subscribes", column = "subscribes"),
             @Result(property = "subscribers", column = "subscribers")
 
     })
     @Select("SELECT * FROM Profiles " +
             "WHERE nickname ILIKE CONCAT('${nickname}', '%') " +
+            "AND profileId != '${profileId}' " +
             "ORDER BY nickname;")
-    List<Profile> findByNickname(String nickname);
+    List<Profile> findByNickname(String nickname, UUID profileId);
 
     @Update("UPDATE Profiles " +
             "SET nickname =  '${nickname}', status = '${status}', description = '${description}', " +

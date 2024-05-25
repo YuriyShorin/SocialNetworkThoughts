@@ -1,6 +1,6 @@
 package hse.coursework.socialnetworkthoughts.controller;
 
-import hse.coursework.socialnetworkthoughts.dto.feed.FeedResponse;
+import hse.coursework.socialnetworkthoughts.dto.feed.FeedResponseDto;
 import hse.coursework.socialnetworkthoughts.dto.profile.SearchProfileResponseDto;
 import hse.coursework.socialnetworkthoughts.security.model.User;
 import hse.coursework.socialnetworkthoughts.service.SearchService;
@@ -31,7 +31,7 @@ public class SearchController {
 
     @Operation(summary = "Найти список постов по теме")
     @GetMapping("/posts/{theme}")
-    public ResponseEntity<List<FeedResponse>> searchPostsByTheme(
+    public ResponseEntity<List<FeedResponseDto>> searchPostsByTheme(
             @PathVariable String theme,
             @AuthenticationPrincipal User user) {
         return searchService.searchPostsByTheme(theme, user);

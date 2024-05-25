@@ -5,12 +5,13 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 
 import java.sql.Timestamp;
+import java.util.List;
 import java.util.UUID;
 
 @Schema(description = "Dto для получения ленты")
 @Data
 @Accessors(chain = true)
-public class FeedResponse {
+public class FeedResponseDto {
 
     @Schema(description = "Id поста", example = "e75e1be9-aadd-4144-9941-7b180cdbcff4")
     private UUID postId;
@@ -54,4 +55,7 @@ public class FeedResponse {
 
     @Schema(description = "Последнее время редактирования поста", example = "2024-15-02 11:58:00")
     private Timestamp editedAt;
+
+    @Schema(description = "Изображения")
+    private List<byte[]> images;
 }

@@ -1,19 +1,19 @@
 package hse.coursework.socialnetworkthoughts.repository;
 
-import hse.coursework.socialnetworkthoughts.model.FilePath;
+import hse.coursework.socialnetworkthoughts.model.ImagePath;
 import hse.coursework.socialnetworkthoughts.model.Id;
 import org.apache.ibatis.annotations.*;
 
 import java.util.UUID;
 
 @Mapper
-public interface ProfilesPicturesRepository {
+public interface ProfilesImagesRepository {
 
-    @Select("INSERT INTO profiles_pictures(profile_id) " +
+    @Select("INSERT INTO Profiles_images(profile_id) " +
             "VALUES ('${profileId}') RETURNING id;")
     Id save(@Param("profileId") UUID profileId);
 
-    @Update("UPDATE profiles_pictures " +
+    @Update("UPDATE Profiles_images " +
             "SET url = '${path}' " +
             "WHERE id = '${id}';")
     void savePath(@Param("id") UUID id, @Param("path") String path);
@@ -21,7 +21,7 @@ public interface ProfilesPicturesRepository {
     @Results(value = {
             @Result(property = "path", column = "url")
     })
-    @Select("SELECT url FROM profiles_pictures " +
+    @Select("SELECT url FROM Profiles_images " +
             "WHERE profile_id = '${profileId}';")
-    FilePath findPathsByProfileId(UUID profileId);
+    ImagePath findPathsByProfileId(UUID profileId);
 }

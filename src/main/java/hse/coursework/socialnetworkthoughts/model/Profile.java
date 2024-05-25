@@ -21,8 +21,6 @@ public class Profile {
 
     private String status;
 
-    private String description;
-
     private Long subscribes;
 
     private Long subscribers;
