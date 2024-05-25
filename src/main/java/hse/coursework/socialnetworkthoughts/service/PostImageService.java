@@ -40,4 +40,12 @@ public class PostImageService implements IImageService {
     public List<ImagePath> findPathsByPostId(UUID postId) {
         return postImagesRepository.findPathsByPostId(postId);
     }
+
+    @Transactional
+    public void deleteByPostId(UUID postId) {
+        List<ImagePath> paths = findPathsByPostId(postId);
+        deleteImages(paths);
+
+        postImagesRepository.deleteByPostId(postId);
+    }
 }

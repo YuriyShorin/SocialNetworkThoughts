@@ -53,4 +53,8 @@ public interface CommentRepository {
     @Delete("DELETE FROM Comments " +
             "WHERE id = '${id}';")
     void deleteById(UUID id);
+
+    @Delete("DELETE FROM Comments " +
+            "WHERE post_id = '${postId}';")
+    void deleteByPostId(@Param("postId") UUID postId);
 }

@@ -54,9 +54,9 @@ public interface ProfileRepository {
     })
     @Select("SELECT * FROM Profiles " +
             "WHERE nickname ILIKE CONCAT('${nickname}', '%') " +
-            "AND profileId != '${profileId}' " +
+            "AND id != '${id}' " +
             "ORDER BY nickname;")
-    List<Profile> findByNickname(String nickname, UUID profileId);
+    List<Profile> findByNickname(String nickname, UUID id);
 
     @Update("UPDATE Profiles " +
             "SET nickname =  '${nickname}', status = '${status}', description = '${description}', " +

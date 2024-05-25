@@ -25,4 +25,8 @@ public interface PostImagesRepository {
     @Select("SELECT url FROM Posts_images " +
             "WHERE post_id = '${postId}';")
     List<ImagePath> findPathsByPostId(@Param("postId") UUID postId);
+
+    @Delete("DELETE FROM Posts_images " +
+            "WHERE post_id = '${postId}';")
+    void deleteByPostId(@Param("postId") UUID postId);
 }

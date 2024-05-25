@@ -4,6 +4,7 @@ import hse.coursework.socialnetworkthoughts.enums.ExceptionMessageEnum;
 import hse.coursework.socialnetworkthoughts.enums.SeparatorEnum;
 import hse.coursework.socialnetworkthoughts.exception.CommonRuntimeException;
 import hse.coursework.socialnetworkthoughts.model.Id;
+import hse.coursework.socialnetworkthoughts.model.ImagePath;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpStatus;
@@ -11,10 +12,12 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.util.List;
 import java.util.UUID;
 
 public interface IImageService {
@@ -61,6 +64,16 @@ public interface IImageService {
             throw new CommonRuntimeException(HttpStatus.INTERNAL_SERVER_ERROR.value(),
                     ExceptionMessageEnum.UNEXPECTED_ERROR_MESSAGE.getValue(), e.getCause());
         }
+    }
+
+    default void deleteImages(List<ImagePath> paths) {
+        paths.forEach(path -> {
+            File file = new File(path.getPath());
+            if (!file.delete()) {
+                throw new CommonRuntimeException(HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                        ExceptionMessageEnum.UNEXPECTED_ERROR_MESSAGE.getValue());
+            }
+        });
     }
 
     private String generateImageName(String fileExtension, UUID id) {

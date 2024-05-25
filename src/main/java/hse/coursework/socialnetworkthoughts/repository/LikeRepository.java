@@ -23,7 +23,11 @@ public interface LikeRepository {
     void save(@Param("profileId") UUID profileId, @Param("postId") UUID postId);
 
     @Delete("DELETE FROM Likes " +
+            "WHERE post_id = '${postId}';")
+    void deleteByPostId(@Param("postId") UUID postId);
+
+    @Delete("DELETE FROM Likes " +
             "WHERE profile_id = '${profileId}' " +
             "AND post_id = '${postId}';")
-    void delete(@Param("profileId") UUID profileId, @Param("postId") UUID postId);
+    void deleteByProfileIdAndPostId(@Param("profileId") UUID profileId, @Param("postId") UUID postId);
 }

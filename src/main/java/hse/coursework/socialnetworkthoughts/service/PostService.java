@@ -31,7 +31,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class PostService {
 
-    private final PostImageService postFileService;
+    private final PostImageService postImageService;
 
     private final ProfileRepository profileRepository;
 
@@ -59,7 +59,7 @@ public class PostService {
         if (images != null) {
             Arrays.stream(images)
                     .filter(Objects::nonNull)
-                    .forEach(image -> postFileService.save(image, postId.getId()));
+                    .forEach(image -> postImageService.save(image, postId.getId()));
         }
 
         return ResponseEntity.status(HttpStatus.CREATED).body(new IdResponseDto(postId.getId()));
@@ -85,10 +85,14 @@ public class PostService {
         Profile profile = profileRepository.findByUserId(user.getId())
                 .orElseThrow(() -> new CommonRuntimeException(HttpStatus.NOT_FOUND.value(), ExceptionMessageEnum.PROFILE_NOT_FOUND_MESSAGE.getValue()));
 
-        postRepository.findByIdAndProfileId(id, profile.getId())
+        Post post = postRepository.findByIdAndProfileId(id, profile.getId())
                 .orElseThrow(() -> new CommonRuntimeException(HttpStatus.CONFLICT.value(), ExceptionMessageEnum.NOT_POST_OWNER_MESSAGE.getValue()));
 
+        likeRepository.deleteByPostId(post.getId());
+        commentRepository.deleteByPostId(post.getId());
+        postImageService.deleteByPostId(post.getId());
         postRepository.delete(id);
+
         return ResponseEntity.ok().build();
     }
 
@@ -123,7 +127,7 @@ public class PostService {
             throw new CommonRuntimeException(HttpStatus.CONFLICT.value(), ExceptionMessageEnum.POST_NOT_LIKED_MESSAGE.getValue());
         }
 
-        likeRepository.delete(profile.getId(), postId);
+        likeRepository.deleteByProfileIdAndPostId(profile.getId(), postId);
         post.setLikes(post.getLikes() - 1);
         postRepository.update(post);
 
