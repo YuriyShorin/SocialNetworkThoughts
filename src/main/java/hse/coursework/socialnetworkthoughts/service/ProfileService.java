@@ -160,7 +160,7 @@ public class ProfileService {
     }
 
     private byte[] getProfileImage(UUID profileId) {
-        ImagePath profileImage = profileImageService.findPathsByProfileId(profileId);
+        ImagePath profileImage = profileImageService.findPathByProfileId(profileId);
 
         if (profileImage == null) {
             return new byte[0];
@@ -210,12 +210,12 @@ public class ProfileService {
         Profile currentProfile = profileRepository.findByUserId(user.getId())
                 .orElseThrow(() -> new CommonRuntimeException(HttpStatus.NOT_FOUND.value(), ExceptionMessageEnum.PROFILE_NOT_FOUND_MESSAGE.getValue()));
 
-        if (updateProfileRequestDto.getStatus() != null) {
-            currentProfile.setStatus(updateProfileRequestDto.getStatus());
-        }
-
         if (updateProfileRequestDto.getNickname() != null) {
             currentProfile.setNickname(updateProfileRequestDto.getNickname());
+        }
+
+        if (updateProfileRequestDto.getStatus() != null) {
+            currentProfile.setStatus(updateProfileRequestDto.getStatus());
         }
 
         profileRepository.update(currentProfile);
@@ -223,6 +223,7 @@ public class ProfileService {
         MultipartFile picture = updateProfileRequestDto.getProfilePicture();
 
         if (picture != null) {
+            profileImageService.deleteByProfileId(currentProfile.getId());
             profileImageService.save(picture, currentProfile.getId());
         }
 

@@ -22,7 +22,7 @@ public abstract class FeedMapper {
 
     @Named("getProfileImage")
     protected byte[] getProfileImage(UUID profileId) {
-        ImagePath profileImage = profileFileService.findPathsByProfileId(profileId);
+        ImagePath profileImage = profileFileService.findPathByProfileId(profileId);
 
         if (profileImage == null) {
             return new byte[0];

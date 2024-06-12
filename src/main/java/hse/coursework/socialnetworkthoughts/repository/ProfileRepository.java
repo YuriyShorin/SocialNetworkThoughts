@@ -59,7 +59,7 @@ public interface ProfileRepository {
     List<Profile> findByNickname(String nickname, UUID id);
 
     @Update("UPDATE Profiles " +
-            "SET nickname =  '${nickname}', status = '${status}', description = '${description}', " +
+            "SET nickname =  '${nickname}', status = '${status}', " +
             "subscribes = '${subscribes}', subscribers = '${subscribers}' " +
             "WHERE id = '${id}';")
     void update(Profile profile);

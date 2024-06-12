@@ -23,5 +23,9 @@ public interface ProfilesImagesRepository {
     })
     @Select("SELECT url FROM Profiles_images " +
             "WHERE profile_id = '${profileId}';")
-    ImagePath findPathsByProfileId(UUID profileId);
+    ImagePath findPathByProfileId(@Param("profileId") UUID profileId);
+
+    @Delete("DELETE FROM Profiles_images " +
+            "WHERE profile_id = '${profileId}';")
+    void deleteByProfileId(@Param("profileId") UUID profileId);
 }

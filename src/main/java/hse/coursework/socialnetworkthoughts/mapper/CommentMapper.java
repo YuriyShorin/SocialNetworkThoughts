@@ -25,7 +25,7 @@ public abstract class CommentMapper {
 
     @Named("getProfileImage")
     protected byte[] getProfileImage(UUID profileId) {
-        ImagePath profileImage = profileFileService.findPathsByProfileId(profileId);
+        ImagePath profileImage = profileFileService.findPathByProfileId(profileId);
 
         if (profileImage == null) {
             return new byte[0];

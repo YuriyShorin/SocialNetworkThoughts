@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
 import java.util.UUID;
 
 @Service
@@ -36,7 +37,16 @@ public class ProfileImageService implements IImageService {
     }
 
     @Transactional(readOnly = true)
-    public ImagePath findPathsByProfileId(UUID profileId) {
-        return profilesImagesRepository.findPathsByProfileId(profileId);
+    public ImagePath findPathByProfileId(UUID profileId) {
+        return profilesImagesRepository.findPathByProfileId(profileId);
+    }
+
+    @Transactional
+    public void deleteByProfileId(UUID profileId) {
+        ImagePath path = findPathByProfileId(profileId);
+        if (path != null) {
+            deleteImages(Collections.singletonList(path));
+        }
+        profilesImagesRepository.deleteByProfileId(profileId);
     }
 }
