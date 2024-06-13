@@ -9,23 +9,18 @@ import hse.coursework.socialnetworkthoughts.dto.post.UpdatePostRequestDto;
 import hse.coursework.socialnetworkthoughts.enums.ExceptionMessageEnum;
 import hse.coursework.socialnetworkthoughts.exception.*;
 import hse.coursework.socialnetworkthoughts.mapper.CommentMapper;
-import hse.coursework.socialnetworkthoughts.model.Comment;
-import hse.coursework.socialnetworkthoughts.model.Id;
-import hse.coursework.socialnetworkthoughts.model.Post;
-import hse.coursework.socialnetworkthoughts.model.Profile;
+import hse.coursework.socialnetworkthoughts.model.*;
 import hse.coursework.socialnetworkthoughts.repository.*;
 import hse.coursework.socialnetworkthoughts.security.model.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -40,6 +35,8 @@ public class PostService {
     private final LikeRepository likeRepository;
 
     private final CommentRepository commentRepository;
+
+    private final ViewRepository viewRepository;
 
     private final CommentMapper commentMapper;
 
@@ -104,7 +101,7 @@ public class PostService {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new CommonRuntimeException(HttpStatus.NOT_FOUND.value(), ExceptionMessageEnum.POST_NOT_FOUND_MESSAGE.getValue()));
 
-        if (likeRepository.findByProfileId(profile.getId(), postId).isPresent()) {
+        if (likeRepository.findByProfileIdAndPostId(profile.getId(), postId).isPresent()) {
             throw new CommonRuntimeException(HttpStatus.CONFLICT.value(), ExceptionMessageEnum.POST_ALREADY_LIKED_MESSAGE.getValue());
         }
 
@@ -123,7 +120,7 @@ public class PostService {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new CommonRuntimeException(HttpStatus.NOT_FOUND.value(), ExceptionMessageEnum.POST_NOT_FOUND_MESSAGE.getValue()));
 
-        if (likeRepository.findByProfileId(profile.getId(), postId).isEmpty()) {
+        if (likeRepository.findByProfileIdAndPostId(profile.getId(), postId).isEmpty()) {
             throw new CommonRuntimeException(HttpStatus.CONFLICT.value(), ExceptionMessageEnum.POST_NOT_LIKED_MESSAGE.getValue());
         }
 
@@ -224,6 +221,27 @@ public class PostService {
                 .setCreatedAt(post.getCreatedAt())
                 .setEditedAt(post.getEditedAt());
         postRepository.save(repost);
+
+        return ResponseEntity.ok().build();
+    }
+
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public ResponseEntity<?> viewPost(UUID postId, User user) {
+        Profile profile = profileRepository.findByUserId(user.getId())
+                .orElseThrow(() -> new CommonRuntimeException(HttpStatus.NOT_FOUND.value(), ExceptionMessageEnum.PROFILE_NOT_FOUND_MESSAGE.getValue()));
+
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new CommonRuntimeException(HttpStatus.NOT_FOUND.value(), ExceptionMessageEnum.POST_NOT_FOUND_MESSAGE.getValue()));
+
+        Optional<View> viewOptional = viewRepository.findByProfileIdAndPostId(profile.getId(), post.getId());
+        if (viewOptional.isPresent()) {
+            return ResponseEntity.ok().build();
+        }
+
+        viewRepository.save(profile.getId(), post.getId());
+
+        post.setViews(post.getViews() + 1);
+        postRepository.update(post);
 
         return ResponseEntity.ok().build();
     }

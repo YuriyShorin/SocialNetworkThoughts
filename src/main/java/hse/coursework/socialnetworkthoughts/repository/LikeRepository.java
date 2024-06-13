@@ -16,7 +16,7 @@ public interface LikeRepository {
     @Select("SELECT profile_id, post_id FROM Likes " +
             "WHERE profile_id = '${profileId}' " +
             "AND post_id = '${postId}';")
-    Optional<Like> findByProfileId(@Param("profileId") UUID profileId, @Param("postId") UUID postId);
+    Optional<Like> findByProfileIdAndPostId(@Param("profileId") UUID profileId, @Param("postId") UUID postId);
 
     @Insert("INSERT INTO Likes(profile_id, post_id) " +
             "VALUES ('${profileId}', '${postId}');")

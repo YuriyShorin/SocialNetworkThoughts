@@ -27,7 +27,7 @@ public abstract class PostMapper {
     }
 
     protected Boolean getLikeStatus(Post post, UUID profileId) {
-        return likeRepository.findByProfileId(profileId, post.getId())
+        return likeRepository.findByProfileIdAndPostId(profileId, post.getId())
                 .isPresent();
     }
 }

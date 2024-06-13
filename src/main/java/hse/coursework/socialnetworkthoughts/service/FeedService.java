@@ -58,7 +58,7 @@ public class FeedService {
     }
 
     private FeedResponseDto getFeedResponse(Feed feed, Profile profile) {
-        Boolean isLiked = likeRepository.findByProfileId(profile.getId(), feed.getPostId()).isPresent();
+        Boolean isLiked = likeRepository.findByProfileIdAndPostId(profile.getId(), feed.getPostId()).isPresent();
         return feedMapper.toFeedResponse(feed, isLiked);
     }
 }

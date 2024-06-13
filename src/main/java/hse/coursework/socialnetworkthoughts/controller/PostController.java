@@ -130,4 +130,17 @@ public class PostController {
             @AuthenticationPrincipal User user) {
         return postService.repost(postId, user);
     }
+
+    @Operation(summary = "Добавить просмотр к посту")
+    @PostMapping("/view/{postId}")
+    public ResponseEntity<?> viewPost(
+            @Parameter(
+                    in = ParameterIn.PATH,
+                    description = "Id поста",
+                    required = true,
+                    schema = @Schema(example = "86ae734e-87d6-44f1-8e7d-991e308b3121"))
+            @PathVariable UUID postId,
+            @AuthenticationPrincipal User user) {
+        return postService.viewPost(postId, user);
+    }
 }
